@@ -1,0 +1,674 @@
+{% extends "accounts/base_customer.html" %}
+{% load static %}
+
+{% block title %}
+My Orders | FarmBridge
+{% endblock %}
+
+{% block nav_orders %}
+active
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .orders-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .welcome-section {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 28px 32px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 18px rgba(0,0,0,0.12);
+    }
+
+    .welcome-section h1 {
+        margin: 0 0 6px;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .welcome-section p {
+        margin: 0;
+        font-size: 15px;
+        opacity: 0.92;
+    }
+
+    .order-card {
+        position: relative;
+        background: white;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        overflow: hidden;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        transition: 0.25s ease;
+    }
+
+    .order-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2e7d32;
+    }
+
+    .order-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    .order-header {
+        background: #f5f9f5;
+        padding: 20px 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    .order-number {
+        font-size: 19px;
+        font-weight: 700;
+        color: #1b5e20;
+    }
+
+    .order-date {
+        color: #777;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .status-badge {
+        padding: 7px 14px;
+        border-radius: 20px;
+        background: #e8f5e9;
+        color: #1b5e20;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .order-body {
+        padding: 8px 22px;
+    }
+
+    .product-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .product-row:last-child {
+        border-bottom: none;
+    }
+
+    .product-image {
+        width: 82px;
+        height: 82px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        flex-shrink: 0;
+    }
+
+    .product-info {
+        flex: 1;
+    }
+
+    .product-name {
+        font-size: 17px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .product-details {
+        color: #777;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .product-total {
+        font-weight: 700;
+        color: #1b5e20;
+        font-size: 17px;
+        white-space: nowrap;
+    }
+
+    .tracking-section {
+        padding: 25px 22px 30px;
+        background: #ffffff;
+        border-top: 1px solid #eee;
+    }
+
+    .tracking-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 28px;
+    }
+
+    .progress-container {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin: 0 28px;
+    }
+
+    .progress-line {
+        position: absolute;
+        top: 15px;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: #e0e0e0;
+        z-index: 1;
+        border-radius: 5px;
+    }
+
+    .progress-line-active {
+        position: absolute;
+        top: 15px;
+        left: 0;
+        height: 4px;
+        background: #2e7d32;
+        z-index: 2;
+        transition: width 0.3s ease;
+        border-radius: 5px;
+    }
+
+    .step {
+        position: relative;
+        z-index: 3;
+        text-align: center;
+        width: 20%;
+    }
+
+    .step-circle {
+        width: 30px;
+        height: 30px;
+        margin: 0 auto 9px;
+        border-radius: 50%;
+        background: #e0e0e0;
+        color: #777;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        border: 3px solid white;
+        transition: 0.2s;
+    }
+
+    .step.active .step-circle {
+        background: #2e7d32;
+        color: white;
+        box-shadow: 0 0 0 2px #c8e6c9;
+    }
+
+    .step-label {
+        font-size: 12px;
+        color: #888;
+        font-weight: 600;
+    }
+
+    .step.active .step-label {
+        color: #1b5e20;
+    }
+
+    .order-summary {
+        background: #f9fbf9;
+        padding: 20px 22px;
+        border-top: 1px solid #eee;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        color: #555;
+        gap: 15px;
+    }
+
+    .summary-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .paid {
+        color: #2e7d32;
+        font-weight: 700;
+    }
+
+    .pending {
+        color: #ef6c00;
+        font-weight: 700;
+    }
+
+    .grand-total {
+        padding-top: 13px;
+        margin-top: 12px;
+        border-top: 1px solid #ddd;
+        font-size: 20px;
+        font-weight: 700;
+        color: #1b5e20;
+    }
+
+    .order-actions {
+        padding: 18px 22px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 18px;
+        border-radius: 7px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .btn-bill {
+        background: #2e7d32;
+        color: white;
+    }
+
+    .btn-bill:hover {
+        background: #1b5e20;
+        transform: translateY(-1px);
+    }
+
+    .btn-payment {
+        background: #ff9800;
+        color: white;
+    }
+
+    .btn-payment:hover {
+        background: #ef6c00;
+        transform: translateY(-1px);
+    }
+
+    .empty-orders {
+        position: relative;
+        background: white;
+        border-radius: 14px;
+        padding: 60px 25px;
+        text-align: center;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .empty-orders::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2e7d32;
+    }
+
+    .empty-icon {
+        font-size: 55px;
+        margin-bottom: 15px;
+    }
+
+    .empty-orders h2 {
+        color: #555;
+        margin-bottom: 8px;
+    }
+
+    .empty-orders p {
+        color: #777;
+        margin-bottom: 22px;
+    }
+
+    .shop-btn {
+        display: inline-block;
+        background: #2e7d32;
+        color: white;
+        padding: 11px 22px;
+        border-radius: 7px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .shop-btn:hover {
+        background: #1b5e20;
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 650px) {
+
+        .welcome-section {
+            padding: 22px;
+        }
+
+        .welcome-section h1 {
+            font-size: 24px;
+        }
+
+        .order-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .product-row {
+            align-items: flex-start;
+        }
+
+        .product-image {
+            width: 65px;
+            height: 65px;
+        }
+
+        .product-total {
+            font-size: 14px;
+        }
+
+        .order-actions {
+            justify-content: stretch;
+        }
+
+        .order-actions .btn {
+            flex: 1;
+            text-align: center;
+        }
+
+        .progress-container {
+            margin: 0 5px;
+        }
+
+        .step-label {
+            font-size: 10px;
+        }
+
+        .summary-row {
+            font-size: 14px;
+        }
+
+    }
+
+</style>
+
+<div class="orders-container">
+
+    <div class="welcome-section">
+
+        <h1>
+            My Orders 📦
+        </h1>
+
+        <p>
+            View your orders, track their status and manage payments.
+        </p>
+
+    </div>
+
+    {% if orders %}
+
+        {% for order in orders %}
+
+            <div class="order-card">
+
+                <div class="order-header">
+
+                    <div>
+
+                        <div class="order-number">
+                            Order #{{ order.id }}
+                        </div>
+
+                        <div class="order-date">
+                            {{ order.created_at|date:"d M Y, h:i A" }}
+                        </div>
+
+                    </div>
+
+                    <div class="status-badge">
+                        {{ order.get_status_display }}
+                    </div>
+
+                </div>
+
+                <div class="order-body">
+
+                    {% for item in order.items.all %}
+
+                        <div class="product-row">
+
+                            {% if item.product.image %}
+
+                                <img
+                                    src="{% static item.product.image %}"
+                                    alt="{{ item.product.name }}"
+                                    class="product-image"
+                                >
+
+                            {% endif %}
+
+                            <div class="product-info">
+
+                                <div class="product-name">
+                                    {{ item.product.name }}
+                                </div>
+
+                                <div class="product-details">
+                                    Quantity: {{ item.quantity }}<br>
+                                    Price: ₹{{ item.price|floatformat:2 }} / unit
+                                </div>
+
+                            </div>
+
+                            <div class="product-total">
+                                ₹{{ item.item_total|floatformat:2 }}
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <div class="tracking-section">
+
+                    <div class="tracking-title">
+                        Order Tracking
+                    </div>
+
+                    <div class="progress-container">
+
+                        <div class="progress-line"></div>
+
+                        {% if order.status == "placed" %}
+                            <div class="progress-line-active" style="width: 0%;"></div>
+                        {% elif order.status == "confirmed" %}
+                            <div class="progress-line-active" style="width: 25%;"></div>
+                        {% elif order.status == "preparing" %}
+                            <div class="progress-line-active" style="width: 50%;"></div>
+                        {% elif order.status == "shipped" %}
+                            <div class="progress-line-active" style="width: 75%;"></div>
+                        {% elif order.status == "delivered" %}
+                            <div class="progress-line-active" style="width: 100%;"></div>
+                        {% endif %}
+
+                        <div class="step {% if order.status == 'placed' or order.status == 'confirmed' or order.status == 'preparing' or order.status == 'shipped' or order.status == 'delivered' %}active{% endif %}">
+
+                            <div class="step-circle">
+                                1
+                            </div>
+
+                            <div class="step-label">
+                                Placed
+                            </div>
+
+                        </div>
+
+                        <div class="step {% if order.status == 'confirmed' or order.status == 'preparing' or order.status == 'shipped' or order.status == 'delivered' %}active{% endif %}">
+
+                            <div class="step-circle">
+                                2
+                            </div>
+
+                            <div class="step-label">
+                                Confirmed
+                            </div>
+
+                        </div>
+
+                        <div class="step {% if order.status == 'preparing' or order.status == 'shipped' or order.status == 'delivered' %}active{% endif %}">
+
+                            <div class="step-circle">
+                                3
+                            </div>
+
+                            <div class="step-label">
+                                Preparing
+                            </div>
+
+                        </div>
+
+                        <div class="step {% if order.status == 'shipped' or order.status == 'delivered' %}active{% endif %}">
+
+                            <div class="step-circle">
+                                4
+                            </div>
+
+                            <div class="step-label">
+                                Shipped
+                            </div>
+
+                        </div>
+
+                        <div class="step {% if order.status == 'delivered' %}active{% endif %}">
+
+                            <div class="step-circle">
+                                5
+                            </div>
+
+                            <div class="step-label">
+                                Delivered
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="order-summary">
+
+                    <div class="summary-row">
+
+                        <span>
+                            Payment Method
+                        </span>
+
+                        <strong>
+                            {% if order.payment_method %}
+                                {{ order.payment_method }}
+                            {% else %}
+                                Not selected
+                            {% endif %}
+                        </strong>
+
+                    </div>
+
+                    <div class="summary-row">
+
+                        <span>
+                            Payment Status
+                        </span>
+
+                        <strong class="{% if order.payment_status == 'paid' %}paid{% else %}pending{% endif %}">
+                            {{ order.payment_status|title }}
+                        </strong>
+
+                    </div>
+
+                    <div class="summary-row grand-total">
+
+                        <span>
+                            Order Total
+                        </span>
+
+                        <span>
+                            ₹{{ order.total_amount|floatformat:2 }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="order-actions">
+
+                    <a
+                        href="{% url 'order_bill' order.id %}?tab_token={{ tab_token }}"
+                        class="btn btn-bill"
+                    >
+                        View Bill
+                    </a>
+
+                    {% if order.payment_status != "paid" %}
+
+                        <a
+                            href="{% url 'payment' order.id %}?tab_token={{ tab_token }}"
+                            class="btn btn-payment"
+                        >
+                            Payment
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty-orders">
+
+            <div class="empty-icon">
+                📦
+            </div>
+
+            <h2>
+                No Orders Yet
+            </h2>
+
+            <p>
+                You haven't placed any orders yet. Start shopping for fresh products from farmers.
+            </p>
+
+            <a
+                href="{% url 'customer_products' %}?tab_token={{ tab_token }}"
+                class="shop-btn"
+            >
+                Browse Products
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

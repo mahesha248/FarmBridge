@@ -1,0 +1,428 @@
+{% extends "accounts/base_farmer.html" %}
+{% load static %}
+
+{% block title %}
+My Products | FarmBridge
+{% endblock %}
+
+{% block nav_products %}
+active
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .products-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .welcome-section {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 30px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .welcome-content h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+    }
+
+    .welcome-content p {
+        margin: 0;
+        opacity: 0.92;
+    }
+
+    .add-product-btn {
+        background: white;
+        color: #1b5e20;
+        padding: 12px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 14px;
+        white-space: nowrap;
+        transition: 0.2s;
+    }
+
+    .add-product-btn:hover {
+        background: #e8f5e9;
+        transform: translateY(-2px);
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        transition: 0.2s;
+        border: 1px solid #eeeeee;
+    }
+
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        border-color: #2e7d32;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .product-info {
+        padding: 18px;
+    }
+
+    .category {
+        display: inline-block;
+        background: #e8f5e9;
+        color: #2e7d32;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .product-name {
+        font-size: 20px;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 8px;
+    }
+
+    .description {
+        color: #777;
+        font-size: 14px;
+        min-height: 40px;
+        margin-bottom: 12px;
+    }
+
+    .price {
+        font-size: 20px;
+        font-weight: bold;
+        color: #2e7d32;
+        margin-bottom: 5px;
+    }
+
+    .quantity {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .expiry-info {
+        margin-bottom: 15px;
+        padding: 9px 11px;
+        background-color: #f1f8e9;
+        color: #33691e;
+        border-radius: 7px;
+        font-size: 13px;
+        border-left: 3px solid #2e7d32;
+    }
+
+    .expiry-info strong {
+        color: #2e7d32;
+    }
+
+    .actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-btn {
+        flex: 1;
+        display: block;
+        text-align: center;
+        padding: 10px;
+        border-radius: 7px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: bold;
+        box-sizing: border-box;
+    }
+
+    .edit-btn {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .edit-btn:hover {
+        background: #c8e6c9;
+    }
+
+    .delete-btn {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .delete-btn:hover {
+        background: #ffcdd2;
+    }
+
+    .empty-products {
+        background: white;
+        padding: 50px;
+        text-align: center;
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    }
+
+    .empty-products h3 {
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .empty-products p {
+        color: #888;
+        margin-bottom: 20px;
+    }
+
+    .empty-add-btn {
+        display: inline-block;
+        background: #2e7d32;
+        color: white;
+        padding: 11px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .empty-add-btn:hover {
+        background: #1b5e20;
+    }
+
+    @media (max-width: 1000px) {
+
+        .products-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+    }
+
+    @media (max-width: 750px) {
+
+        .products-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .welcome-section {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+    }
+
+    @media (max-width: 500px) {
+
+        .products-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .welcome-section {
+            padding: 22px;
+        }
+
+        .welcome-content h1 {
+            font-size: 23px;
+        }
+
+        .add-product-btn {
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+    }
+
+</style>
+
+<div class="products-container">
+
+    <div class="welcome-section">
+
+        <div class="welcome-content">
+
+            <h1>
+                My Products 🌾
+            </h1>
+
+            <p>
+                Manage the products you have added to FarmBridge.
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'add_product' %}?tab_token={{ request.GET.tab_token }}"
+            class="add-product-btn"
+        >
+            ➕ Add Product
+        </a>
+
+    </div>
+
+    {% if products %}
+
+        <div class="products-grid">
+
+            {% for product in products %}
+
+                <div class="product-card">
+
+                    {% if product.image %}
+
+                        <img
+                            src="{% static product.image %}"
+                            class="product-image"
+                            alt="{{ product.name }}"
+                        >
+
+                    {% else %}
+
+                        <div
+                            class="product-image"
+                            style="
+                                background:#e8f5e9;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                font-size:50px;
+                            "
+                        >
+                            🌾
+                        </div>
+
+                    {% endif %}
+
+                    <div class="product-info">
+
+                        <span class="category">
+                            {{ product.category }}
+                        </span>
+
+                        <div class="product-name">
+                            {{ product.name }}
+                        </div>
+
+                        <div class="description">
+
+                            {% if product.description %}
+
+                                {{ product.description }}
+
+                            {% else %}
+
+                                No description available.
+
+                            {% endif %}
+
+                        </div>
+
+                        <div class="price">
+                            ₹{{ product.price }}
+                        </div>
+
+                        <div class="quantity">
+                            Available Quantity: {{ product.quantity }}
+                        </div>
+
+                        {% if product.expiry_date %}
+
+                            <div class="expiry-info">
+
+                                🌿 Fresh Until:
+                                <strong>
+                                    {{ product.expiry_date|date:"d M Y" }}
+                                </strong>
+
+                            </div>
+
+                        {% endif %}
+
+                        <div class="actions">
+
+                            <a
+                                href="{% url 'edit_product' product.id %}?tab_token={{ request.GET.tab_token }}"
+                                class="action-btn edit-btn"
+                            >
+                                ✏️ Edit
+                            </a>
+
+                            <form
+                                method="POST"
+                                action="{% url 'delete_product' product.id %}?tab_token={{ request.GET.tab_token }}"
+                                style="flex:1; margin:0;"
+                                onsubmit="return confirm('Are you sure you want to delete this product?');"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="action-btn delete-btn"
+                                    style="
+                                        width:100%;
+                                        border:none;
+                                        cursor:pointer;
+                                    "
+                                >
+                                    🗑️ Delete
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-products">
+
+            <h3>
+                No Products Found
+            </h3>
+
+            <p>
+                You have not added any products yet.
+            </p>
+
+            <a
+                href="{% url 'add_product' %}?tab_token={{ request.GET.tab_token }}"
+                class="empty-add-btn"
+            >
+                ➕ Add Your First Product
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

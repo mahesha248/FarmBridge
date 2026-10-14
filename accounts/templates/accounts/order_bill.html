@@ -1,0 +1,646 @@
+{% extends "accounts/base_customer.html" %}
+{% load static %}
+
+{% block title %}
+Order Bill | FarmBridge
+{% endblock %}
+
+{% block nav_orders %}
+active
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .bill-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .bill-card {
+        position: relative;
+        background: white;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .bill-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2e7d32;
+    }
+
+    .bill-header {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 30px;
+    }
+
+    .bill-header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .bill-header h1 {
+        margin: 0 0 7px;
+        font-size: 28px;
+    }
+
+    .bill-header p {
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    .order-id {
+        background: rgba(255,255,255,0.15);
+        padding: 9px 14px;
+        border-radius: 7px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .bill-section {
+        padding: 25px 30px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1b5e20;
+        margin-bottom: 18px;
+    }
+
+    .customer-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 17px 30px;
+    }
+
+    .detail-label {
+        color: #777;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .detail-value {
+        color: #333;
+        font-weight: 600;
+        line-height: 1.5;
+    }
+
+    .product-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .product-table th {
+        background: #f3f7f1;
+        color: #555;
+        font-size: 13px;
+        text-align: left;
+        padding: 13px 12px;
+    }
+
+    .product-table td {
+        padding: 15px 12px;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+        color: #444;
+    }
+
+    .product-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .product-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .product-image {
+        width: 62px;
+        height: 62px;
+        object-fit: cover;
+        border-radius: 9px;
+        border: 1px solid #ddd;
+        flex-shrink: 0;
+    }
+
+    .product-name {
+        font-weight: 700;
+        color: #333;
+    }
+
+    .product-category {
+        display: inline-block;
+        color: #1b5e20;
+        background: #e8f5e9;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-top: 4px;
+    }
+
+    .payment-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .payment-box {
+        background: #f9fbf9;
+        border-radius: 9px;
+        padding: 16px;
+        border-left: 4px solid #2e7d32;
+    }
+
+    .payment-box .label {
+        color: #777;
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    .payment-box .value {
+        color: #333;
+        font-weight: 700;
+    }
+
+    .paid {
+        color: #2e7d32 !important;
+    }
+
+    .pending {
+        color: #ef6c00 !important;
+    }
+
+    .status-box {
+        background: #e8f5e9;
+        color: #1b5e20;
+        padding: 15px;
+        border-radius: 9px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .farmer-box {
+        background: #f3f7f1;
+        border-radius: 10px;
+        padding: 18px;
+        border-left: 4px solid #2e7d32;
+    }
+
+    .farmer-name {
+        font-size: 17px;
+        font-weight: 700;
+        color: #1b5e20;
+        margin-bottom: 8px;
+    }
+
+    .farmer-phone {
+        color: #555;
+        line-height: 1.6;
+    }
+
+    .total-section {
+        padding: 25px 30px;
+        background: #f9fbf9;
+    }
+
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .total-label {
+        font-size: 20px;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .total-value {
+        font-size: 25px;
+        font-weight: 700;
+        color: #1b5e20;
+    }
+
+    .bill-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 25px;
+    }
+
+    .btn {
+        padding: 11px 20px;
+        border-radius: 7px;
+        text-decoration: none;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+
+    .btn-back {
+        background: #eeeeee;
+        color: #333;
+    }
+
+    .btn-back:hover {
+        background: #e0e0e0;
+        transform: translateY(-1px);
+    }
+
+    .btn-print {
+        background: #2e7d32;
+        color: white;
+    }
+
+    .btn-print:hover {
+        background: #1b5e20;
+        transform: translateY(-1px);
+    }
+
+    @media print {
+
+        .bill-actions,
+        nav,
+        header {
+            display: none !important;
+        }
+
+        .bill-card {
+            box-shadow: none;
+        }
+
+        body {
+            background: white !important;
+        }
+
+    }
+
+    @media (max-width: 650px) {
+
+        .bill-header {
+            padding: 25px 20px;
+        }
+
+        .bill-header-top {
+            flex-direction: column;
+        }
+
+        .customer-grid,
+        .payment-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .bill-section,
+        .total-section {
+            padding: 20px;
+        }
+
+        .product-table {
+            font-size: 13px;
+        }
+
+        .product-table th:nth-child(3),
+        .product-table td:nth-child(3) {
+            display: none;
+        }
+
+        .product-image {
+            width: 50px;
+            height: 50px;
+        }
+
+        .bill-actions {
+            flex-direction: column;
+        }
+
+        .bill-actions .btn {
+            text-align: center;
+        }
+
+    }
+
+</style>
+
+<div class="bill-container">
+
+    <div class="bill-card">
+
+        <div class="bill-header">
+
+            <div class="bill-header-top">
+
+                <div>
+
+                    <h1>
+                        FarmBridge Bill
+                    </h1>
+
+                    <p>
+                        Thank you for shopping directly from farmers.
+                    </p>
+
+                </div>
+
+                <div class="order-id">
+                    Order #{{ order.id }}
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="bill-section">
+
+            <div class="section-title">
+                Customer Details
+            </div>
+
+            <div class="customer-grid">
+
+                <div>
+
+                    <div class="detail-label">
+                        Name
+                    </div>
+
+                    <div class="detail-value">
+                        {{ order.customer.get_full_name|default:order.customer.username }}
+                    </div>
+
+                </div>
+
+                <div>
+
+                    <div class="detail-label">
+                        Email
+                    </div>
+
+                    <div class="detail-value">
+                        {{ order.customer.email|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+                <div>
+
+                    <div class="detail-label">
+                        Phone
+                    </div>
+
+                    <div class="detail-value">
+                        {{ order.phone }}
+                    </div>
+
+                </div>
+
+                <div>
+
+                    <div class="detail-label">
+                        Order Date
+                    </div>
+
+                    <div class="detail-value">
+                        {{ order.created_at|date:"d M Y, h:i A" }}
+                    </div>
+
+                </div>
+
+                <div style="grid-column: 1 / -1;">
+
+                    <div class="detail-label">
+                        Delivery Address
+                    </div>
+
+                    <div class="detail-value">
+                        {{ order.address }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="bill-section">
+
+            <div class="section-title">
+                Ordered Products
+            </div>
+
+            <table class="product-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Product
+                        </th>
+
+                        <th>
+                            Quantity
+                        </th>
+
+                        <th>
+                            Price
+                        </th>
+
+                        <th>
+                            Total
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for item in order.items.all %}
+
+                        <tr>
+
+                            <td>
+
+                                <div class="product-info">
+
+                                    {% if item.product.image %}
+
+                                        <img
+                                            src="{% static item.product.image %}"
+                                            alt="{{ item.product.name }}"
+                                            class="product-image"
+                                        >
+
+                                    {% endif %}
+
+                                    <div>
+
+                                        <div class="product-name">
+                                            {{ item.product.name }}
+                                        </div>
+
+                                        <div class="product-category">
+                                            {{ item.product.category }}
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <td>
+                                {{ item.quantity }}
+                            </td>
+
+                            <td>
+                                ₹{{ item.price|floatformat:2 }}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ₹{{ item.item_total|floatformat:2 }}
+                                </strong>
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="bill-section">
+
+            <div class="section-title">
+                Payment Details
+            </div>
+
+            <div class="payment-grid">
+
+                <div class="payment-box">
+
+                    <div class="label">
+                        Payment Method
+                    </div>
+
+                    <div class="value">
+                        {% if order.payment_method %}
+                            {{ order.payment_method }}
+                        {% else %}
+                            Not selected
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <div class="payment-box">
+
+                    <div class="label">
+                        Payment Status
+                    </div>
+
+                    <div class="value {% if order.payment_status == 'paid' %}paid{% else %}pending{% endif %}">
+                        {{ order.payment_status|title }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="bill-section">
+
+            <div class="section-title">
+                Order Status
+            </div>
+
+            <div class="status-box">
+                {{ order.get_status_display }}
+            </div>
+
+        </div>
+
+        {% if order.payment_method == "Pay Directly to Farmer" %}
+
+            <div class="bill-section">
+
+                <div class="section-title">
+                    Farmer Contact
+                </div>
+
+                <div class="farmer-box">
+
+                    <div class="farmer-name">
+                        Contact the Farmer
+                    </div>
+
+                    <div class="farmer-phone">
+                        Call the farmer to request their UPI QR code or payment details.
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+        <div class="total-section">
+
+            <div class="total-row">
+
+                <span class="total-label">
+                    Grand Total
+                </span>
+
+                <span class="total-value">
+                    ₹{{ order.total_amount|floatformat:2 }}
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="bill-actions">
+
+        <a
+            href="{% url 'customer_orders' %}?tab_token={{ tab_token }}"
+            class="btn btn-back"
+        >
+            ← Back to Orders
+        </a>
+
+        <button
+            onclick="window.print()"
+            class="btn btn-print"
+        >
+            🖨 Print Bill
+        </button>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+
+        {% block title %}
+
+        FarmBridge Admin
+
+        {% endblock %}
+
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f3f7f1;
+            color: #333;
+        }
+
+
+        .header {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            padding: 24px 30px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+        }
+
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 0.3px;
+        }
+
+
+        .header-right {
+            margin-top: 7px;
+            font-size: 15px;
+            opacity: 0.92;
+        }
+
+
+        .nav {
+            background-color: #1b5e20;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: 9px 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+        }
+
+
+        .nav a {
+            position: relative;
+            color: white;
+            text-decoration: none;
+            padding: 9px 12px;
+            display: block;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+
+        .nav a:hover {
+            background-color: rgba(255, 255, 255, 0.10);
+        }
+
+
+        .nav a.active {
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 0.10);
+        }
+
+
+        .nav a.active::after {
+            content: "";
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: 3px;
+            height: 2px;
+            background-color: white;
+            border-radius: 2px;
+        }
+
+
+        .nav .logout {
+            margin-left: 5px;
+        }
+
+
+        .nav .logout:hover {
+            background-color: rgba(255, 255, 255, 0.10);
+        }
+
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+
+        @media (max-width: 700px) {
+
+            .header {
+                padding: 20px 15px;
+            }
+
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+
+            .header-right {
+                font-size: 14px;
+            }
+
+
+            .nav {
+                padding: 8px 8px;
+                gap: 3px;
+            }
+
+
+            .nav a {
+                padding: 8px 9px;
+                font-size: 13px;
+            }
+
+
+            .nav a.active::after {
+                left: 9px;
+                right: 9px;
+            }
+
+
+            .container {
+                margin: 20px auto;
+                padding: 0 12px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="header">
+
+        <h1>🌱 FarmBridge Admin</h1>
+
+        <div class="header-right">
+            Admin Portal
+        </div>
+
+    </div>
+
+
+    <div class="nav">
+
+
+        <a href="{% url 'admin_dashboard' %}?tab_token={{ tab_token }}"
+
+           class="{% if request.path == '/accounts/admin-dashboard/' %}active{% endif %}">
+
+            🏠 Dashboard
+
+        </a>
+
+
+        <a href="{% url 'admin_farmers' %}?tab_token={{ tab_token }}"
+
+           class="{% if request.path == '/accounts/admin-farmers/' %}active{% endif %}">
+
+            👨‍🌾 Farmers
+
+        </a>
+
+
+        <a href="{% url 'admin_customers' %}?tab_token={{ tab_token }}"
+
+           class="{% if request.path == '/accounts/admin-customers/' %}active{% endif %}">
+
+            👤 Customers
+
+        </a>
+
+
+        <a href="{% url 'admin_products' %}?tab_token={{ tab_token }}"
+
+           class="{% if request.path == '/accounts/admin-products/' %}active{% endif %}">
+
+            🥕 Products
+
+        </a>
+
+
+        <a href="{% url 'admin_orders' %}?tab_token={{ tab_token }}"
+
+           class="{% if '/accounts/admin-orders/' in request.path %}active{% endif %}">
+
+            📦 Orders
+
+        </a>
+
+
+        <a href="/admin/">
+
+            ⚙️ Django Admin
+
+        </a>
+
+
+        <a href="{% url 'logout' %}?tab_token={{ tab_token }}"
+
+           class="logout">
+
+            🚪 Logout
+
+        </a>
+
+
+    </div>
+
+
+    <div class="container">
+
+        {% block content %}
+
+        {% endblock %}
+
+    </div>
+
+
+</body>
+
+</html>

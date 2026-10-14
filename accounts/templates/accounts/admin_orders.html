@@ -1,0 +1,482 @@
+{% extends "accounts/base_admin.html" %}
+
+{% block title %}
+Manage Orders | FarmBridge
+{% endblock %}
+
+{% block nav_orders %}
+active
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .page-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .welcome-section {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 30px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.10);
+    }
+
+    .welcome-section::after {
+        content: "📦";
+        position: absolute;
+        right: 35px;
+        bottom: -20px;
+        font-size: 95px;
+        opacity: 0.12;
+    }
+
+    .welcome-section h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+    }
+
+    .welcome-section p {
+        margin: 0;
+        opacity: 0.92;
+        line-height: 1.5;
+    }
+
+    .order-count {
+        display: inline-block;
+        margin-top: 18px;
+        background: rgba(255,255,255,0.18);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+
+    .table-card {
+        position: relative;
+        overflow: hidden;
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .table-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2e7d32;
+    }
+
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1100px;
+    }
+
+    th {
+        background-color: #f3f7f1;
+        color: #1b5e20;
+        padding: 14px;
+        text-align: center;
+        white-space: nowrap;
+        font-size: 14px;
+        border-bottom: 2px solid #2e7d32;
+    }
+
+    td {
+        padding: 14px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+        white-space: nowrap;
+        color: #444;
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    tbody tr {
+        transition: 0.2s;
+    }
+
+    tbody tr:hover {
+        background-color: #f8fbf7;
+    }
+
+    .order-link {
+        display: inline-block;
+        color: #2e7d32;
+        background: #e8f5e9;
+        padding: 6px 10px;
+        border-radius: 7px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .order-link:hover {
+        background: #2e7d32;
+        color: white;
+    }
+
+    .customer-name,
+    .farmer-name {
+        font-weight: 600;
+        color: #444;
+    }
+
+    .product-name {
+        color: #2e7d32;
+        font-weight: 700;
+    }
+
+    .quantity {
+        display: inline-block;
+        background: #f3f7f1;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-weight: 700;
+    }
+
+    .price {
+        color: #2e7d32;
+        font-weight: 700;
+    }
+
+    .status {
+        display: inline-block;
+        padding: 6px 11px;
+        border-radius: 15px;
+        font-weight: 700;
+        font-size: 12px;
+    }
+
+    .placed {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .confirmed {
+        background-color: #cfe2ff;
+        color: #084298;
+    }
+
+    .preparing {
+        background-color: #e2d9f3;
+        color: #432874;
+    }
+
+    .shipped {
+        background-color: #cff4fc;
+        color: #055160;
+    }
+
+    .delivered {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .paid {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .payment-method {
+        color: #555;
+        font-weight: 500;
+    }
+
+    .empty {
+        position: relative;
+        overflow: hidden;
+        background-color: white;
+        padding: 50px 30px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .empty::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2e7d32;
+    }
+
+    .empty-icon {
+        font-size: 48px;
+        margin-bottom: 10px;
+    }
+
+    .empty h2 {
+        color: #2e7d32;
+        margin-bottom: 8px;
+    }
+
+    .empty p {
+        color: #666;
+        margin: 0;
+    }
+
+    .button-container {
+        text-align: center;
+        margin-top: 25px;
+    }
+
+    .button {
+        display: inline-block;
+        background-color: #2e7d32;
+        color: white;
+        padding: 11px 20px;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+
+    .button:hover {
+        background-color: #1b5e20;
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 700px) {
+
+        .welcome-section {
+            padding: 25px 20px;
+        }
+
+        .welcome-section h1 {
+            font-size: 24px;
+        }
+
+        .table-card {
+            padding: 20px 15px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            font-size: 13px;
+        }
+
+    }
+
+</style>
+
+
+<div class="page-container">
+
+    <div class="welcome-section">
+
+        <h1>
+            Manage Orders 📦
+        </h1>
+
+        <p>
+            View and monitor all customer orders on FarmBridge.
+        </p>
+
+        <div class="order-count">
+            📋 Total Orders: {{ orders|length }}
+        </div>
+
+    </div>
+
+
+    {% if orders %}
+
+    <div class="table-card">
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Order ID</th>
+
+                        <th>Customer</th>
+
+                        <th>Product</th>
+
+                        <th>Farmer</th>
+
+                        <th>Quantity</th>
+
+                        <th>Price</th>
+
+                        <th>Order Status</th>
+
+                        <th>Payment Method</th>
+
+                        <th>Payment Status</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for order in orders %}
+
+                        {% for item in order.items.all %}
+
+                        <tr>
+
+                            <td>
+
+                                <a
+                                    href="{% url 'admin_order_details' order.id %}?tab_token={{ request.GET.tab_token }}"
+                                    class="order-link"
+                                >
+                                    #{{ order.id }}
+                                </a>
+
+                            </td>
+
+
+                            <td class="customer-name">
+                                {{ order.customer.username }}
+                            </td>
+
+
+                            <td class="product-name">
+                                {{ item.product.name }}
+                            </td>
+
+
+                            <td class="farmer-name">
+                                {{ item.product.farmer.username }}
+                            </td>
+
+
+                            <td>
+
+                                <span class="quantity">
+                                    {{ item.quantity }}
+                                </span>
+
+                            </td>
+
+
+                            <td class="price">
+                                ₹{{ item.price|floatformat:2 }}
+                            </td>
+
+
+                            <td>
+
+                                <span class="status {{ item.status }}">
+                                    {{ item.get_status_display }}
+                                </span>
+
+                            </td>
+
+
+                            <td class="payment-method">
+
+                                {% if order.payment_method %}
+
+                                    {{ order.payment_method }}
+
+                                {% else %}
+
+                                    Not Selected
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if order.payment_status == "paid" %}
+
+                                    <span class="status paid">
+                                        ✅ Paid
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status pending">
+                                        ⏳ {{ order.payment_status|default:"Pending"|title }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    {% else %}
+
+    <div class="empty">
+
+        <div class="empty-icon">
+            📦
+        </div>
+
+        <h2>
+            No Orders Found
+        </h2>
+
+        <p>
+            No customer orders have been placed yet.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+
+    <div class="button-container">
+
+        <a
+            href="{% url 'admin_dashboard' %}?tab_token={{ request.GET.tab_token }}"
+            class="button"
+        >
+            ← Back to Admin Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

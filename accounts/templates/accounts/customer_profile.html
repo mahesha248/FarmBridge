@@ -1,0 +1,330 @@
+{% extends "accounts/base_customer.html" %}
+
+{% block title %}
+My Profile | FarmBridge
+{% endblock %}
+
+{% block nav_profile %}
+active
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .profile-container {
+        max-width: 850px;
+        margin: 0 auto;
+    }
+
+    .welcome-section {
+        background: linear-gradient(135deg, #2e7d32, #43a047);
+        color: white;
+        padding: 30px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 15px rgba(46, 125, 50, 0.18);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-section::after {
+        content: "👤";
+        position: absolute;
+        right: 30px;
+        bottom: -15px;
+        font-size: 90px;
+        opacity: 0.12;
+    }
+
+    .welcome-section h2 {
+        margin: 0 0 8px;
+        font-size: 28px;
+    }
+
+    .welcome-section p {
+        margin: 0;
+        font-size: 15px;
+        opacity: 0.95;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 14px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        border-top: 4px solid #2e7d32;
+    }
+
+    .profile-heading {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .profile-icon {
+        width: 85px;
+        height: 85px;
+        margin: 0 auto 15px;
+        border-radius: 50%;
+        background: #e8f5e9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+    }
+
+    .profile-heading h3 {
+        margin: 0;
+        color: #1b5e20;
+        font-size: 22px;
+    }
+
+    .profile-heading p {
+        margin-top: 6px;
+        color: #777;
+        font-size: 14px;
+    }
+
+    .message {
+        padding: 12px 15px;
+        border-radius: 8px;
+        margin-bottom: 18px;
+        font-size: 14px;
+    }
+
+    .success-message {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border-left: 4px solid #2e7d32;
+    }
+
+    .error-message {
+        background: #ffebee;
+        color: #c62828;
+        border-left: 4px solid #c62828;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 7px;
+        font-size: 14px;
+    }
+
+    .form-group input {
+        padding: 12px 14px;
+        border: 1px solid #d5d5d5;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        transition: 0.2s;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus {
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+    }
+
+    .form-group input[readonly] {
+        background: #f5f5f5;
+        color: #777;
+        cursor: not-allowed;
+    }
+
+    .button-section {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    .btn {
+        text-decoration: none;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 22px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-cancel {
+        background: #f1f1f1;
+        color: #555;
+    }
+
+    .btn-cancel:hover {
+        background: #e0e0e0;
+    }
+
+    .btn-save {
+        background: #2e7d32;
+        color: white;
+    }
+
+    .btn-save:hover {
+        background: #1b5e20;
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 700px) {
+
+        .profile-container {
+            width: 100%;
+        }
+
+        .welcome-section {
+            padding: 25px 20px;
+        }
+
+        .welcome-section h2 {
+            font-size: 24px;
+        }
+
+        .profile-card {
+            padding: 22px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group.full-width {
+            grid-column: auto;
+        }
+
+        .button-section {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+
+</style>
+
+<div class="profile-container">
+
+    <div class="welcome-section">
+        <h2>My Profile 👤</h2>
+        <p>Manage your personal information and account details.</p>
+    </div>
+
+    <div class="profile-card">
+
+        <div class="profile-heading">
+            <div class="profile-icon">👤</div>
+            <h3>Profile Information</h3>
+            <p>Update your details below</p>
+        </div>
+
+        {% for message in messages %}
+            <div class="message success-message">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% if error %}
+            <div class="message error-message">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <input type="hidden" name="tab_token" value="{{ tab_token }}">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Username</label>
+                    <input
+                        type="text"
+                        value="{{ request.tab_user.username }}"
+                        readonly
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input
+                        type="text"
+                        name="phone"
+                        value="{{ request.tab_user.userprofile.phone }}"
+                        placeholder="Enter phone number"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input
+                        type="text"
+                        name="first_name"
+                        value="{{ request.tab_user.first_name }}"
+                        placeholder="Enter first name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input
+                        type="text"
+                        name="last_name"
+                        value="{{ request.tab_user.last_name }}"
+                        placeholder="Enter last name"
+                    >
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Email Address</label>
+                    <input
+                        type="email"
+                        name="email"
+                        value="{{ request.tab_user.email }}"
+                        placeholder="Enter email address"
+                    >
+                </div>
+
+            </div>
+
+            <div class="button-section">
+
+                <a
+                    href="{% url 'customer_dashboard' %}?tab_token={{ tab_token }}"
+                    class="btn btn-cancel"
+                >
+                    Cancel
+                </a>
+
+                <button type="submit" class="btn btn-save">
+                    💾 Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

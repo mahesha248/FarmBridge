@@ -1,0 +1,417 @@
+{% extends "accounts/base_admin.html" %}
+{% load static %}
+
+{% block title %}
+Admin Products | FarmBridge
+{% endblock %}
+
+{% block nav_products %}
+active
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .page-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .welcome-section {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 30px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.10);
+    }
+
+    .welcome-section::after {
+        content: "🥕";
+        position: absolute;
+        right: 35px;
+        bottom: -20px;
+        font-size: 95px;
+        opacity: 0.12;
+    }
+
+    .welcome-section h2 {
+        margin: 0 0 8px;
+        font-size: 28px;
+    }
+
+    .welcome-section p {
+        margin: 0;
+        opacity: 0.92;
+        line-height: 1.5;
+    }
+
+    .table-card {
+        position: relative;
+        overflow: hidden;
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .table-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2e7d32;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1050px;
+    }
+
+    th {
+        background: #f3f7f1;
+        color: #1b5e20;
+        padding: 14px;
+        text-align: center;
+        font-size: 14px;
+        border-bottom: 2px solid #2e7d32;
+    }
+
+    td {
+        padding: 14px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+        color: #444;
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    tbody tr {
+        transition: 0.2s;
+    }
+
+    tbody tr:hover {
+        background-color: #f8fbf7;
+    }
+
+    .product-image {
+        width: 75px;
+        height: 75px;
+        object-fit: cover;
+        border-radius: 9px;
+        border: 1px solid #ddd;
+    }
+
+    .no-image {
+        width: 75px;
+        height: 75px;
+        background-color: #f3f7f1;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        font-size: 28px;
+    }
+
+    .product-name {
+        font-weight: 700;
+        color: #333;
+    }
+
+    .category {
+        display: inline-block;
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .price {
+        font-weight: 700;
+        color: #2e7d32;
+    }
+
+    .quantity {
+        display: inline-block;
+        background: #f3f7f1;
+        color: #333;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-weight: 700;
+    }
+
+    .farmer-name {
+        font-weight: 700;
+        color: #2e7d32;
+    }
+
+    .description {
+        color: #666;
+        line-height: 1.5;
+        max-width: 250px;
+        margin: auto;
+    }
+
+    .count {
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+        text-align: right;
+        color: #555;
+        font-weight: 600;
+    }
+
+    .count span {
+        color: #2e7d32;
+    }
+
+    .empty {
+        position: relative;
+        overflow: hidden;
+        background: white;
+        padding: 50px 30px;
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+
+    .empty::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2e7d32;
+    }
+
+    .empty-icon {
+        font-size: 48px;
+        margin-bottom: 10px;
+    }
+
+    .empty h3 {
+        color: #2e7d32;
+        margin-bottom: 8px;
+    }
+
+    .empty p {
+        color: #666;
+        margin: 0;
+    }
+
+    @media (max-width: 700px) {
+
+        .welcome-section {
+            padding: 25px 20px;
+        }
+
+        .welcome-section h2 {
+            font-size: 24px;
+        }
+
+        .table-card {
+            padding: 20px 15px;
+        }
+
+    }
+
+</style>
+
+<div class="page-container">
+
+    <div class="welcome-section">
+
+        <h2>
+            All Products 📦
+        </h2>
+
+        <p>
+            View all products added by farmers on FarmBridge.
+        </p>
+
+    </div>
+
+
+    {% if products %}
+
+    <div class="table-card">
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Photo
+                        </th>
+
+                        <th>
+                            Product Name
+                        </th>
+
+                        <th>
+                            Category
+                        </th>
+
+                        <th>
+                            Farmer
+                        </th>
+
+                        <th>
+                            Price
+                        </th>
+
+                        <th>
+                            Quantity
+                        </th>
+
+                        <th>
+                            Description
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for product in products %}
+
+                    <tr>
+
+                        <td>
+
+                            {% if product.image %}
+
+                                <img
+                                    src="{% static product.image %}"
+                                    alt="{{ product.name }}"
+                                    class="product-image"
+                                >
+
+                            {% else %}
+
+                                <div class="no-image">
+                                    🥕
+                                </div>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="product-name">
+                                {{ product.name }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="category">
+                                {{ product.category }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="farmer-name">
+                                {{ product.farmer.username }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="price">
+                                ₹{{ product.price|floatformat:2 }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="quantity">
+                                {{ product.quantity }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="description">
+                                {{ product.description|default:"-" }}
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="count">
+
+            Total Products:
+            <span>{{ products|length }}</span>
+
+        </div>
+
+    </div>
+
+
+    {% else %}
+
+    <div class="empty">
+
+        <div class="empty-icon">
+            🥕
+        </div>
+
+        <h3>
+            No Products Found
+        </h3>
+
+        <p>
+            No farmers have added any products yet.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

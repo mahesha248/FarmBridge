@@ -1,0 +1,498 @@
+{% extends "accounts/base_customer.html" %}
+
+{% block title %}
+Checkout | FarmBridge
+{% endblock %}
+
+{% block nav_cart %}
+active
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .checkout-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .welcome-section {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 28px 32px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 18px rgba(0,0,0,0.12);
+    }
+
+    .welcome-section h1 {
+        margin: 0 0 6px;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .welcome-section p {
+        margin: 0;
+        font-size: 15px;
+        opacity: 0.92;
+    }
+
+    .error {
+        background: #ffebee;
+        color: #c62828;
+        padding: 13px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: 600;
+        border-left: 4px solid #c62828;
+    }
+
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 25px;
+        align-items: start;
+    }
+
+    .card {
+        position: relative;
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2e7d32;
+    }
+
+    .card h3 {
+        color: #2e7d32;
+        margin: 0 0 22px;
+        padding-bottom: 13px;
+        border-bottom: 1px solid #ddd;
+        font-size: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    input,
+    textarea,
+    select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 7px;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+        font-size: 15px;
+        transition: 0.2s;
+        background: white;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46,125,50,0.10);
+    }
+
+    textarea {
+        height: 105px;
+        resize: vertical;
+    }
+
+    .payment-info {
+        background: #f3f7f1;
+        padding: 14px;
+        border-radius: 8px;
+        margin-top: 10px;
+        color: #555;
+        font-size: 14px;
+        line-height: 1.6;
+        border-left: 4px solid #2e7d32;
+    }
+
+    .payment-info strong {
+        color: #1b5e20;
+    }
+
+    .place-order-button {
+        width: 100%;
+        margin-top: 8px;
+        padding: 13px;
+        background: #2e7d32;
+        color: white;
+        border: none;
+        border-radius: 7px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 700;
+        transition: 0.2s;
+    }
+
+    .place-order-button:hover {
+        background: #1b5e20;
+        transform: translateY(-1px);
+    }
+
+    .back-button {
+        display: block;
+        text-align: center;
+        margin-top: 17px;
+        color: #1b5e20;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .back-button:hover {
+        text-decoration: underline;
+    }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .product-name {
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .product-details {
+        color: #777;
+        font-size: 14px;
+    }
+
+    .item-price {
+        font-weight: 700;
+        color: #1b5e20;
+        white-space: nowrap;
+    }
+
+    .total {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 2px solid #ddd;
+        font-size: 23px;
+        font-weight: 700;
+        color: #1b5e20;
+    }
+
+    .empty {
+        position: relative;
+        background: white;
+        padding: 60px 25px;
+        border-radius: 14px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        text-align: center;
+        overflow: hidden;
+    }
+
+    .empty::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2e7d32;
+    }
+
+    .empty-icon {
+        font-size: 50px;
+        margin-bottom: 10px;
+    }
+
+    .empty h3 {
+        color: #2e7d32;
+        margin-bottom: 10px;
+        font-size: 24px;
+    }
+
+    .empty p {
+        color: #666;
+        margin-bottom: 22px;
+    }
+
+    .shop-button {
+        display: inline-block;
+        background: #2e7d32;
+        color: white;
+        padding: 12px 22px;
+        text-decoration: none;
+        border-radius: 7px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .shop-button:hover {
+        background: #1b5e20;
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 800px) {
+
+        .checkout-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .welcome-section {
+            padding: 22px;
+        }
+
+        .welcome-section h1 {
+            font-size: 24px;
+        }
+
+    }
+
+    @media (max-width: 500px) {
+
+        .card {
+            padding: 20px;
+        }
+
+        .order-item {
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .item-price {
+            text-align: left;
+        }
+
+    }
+
+</style>
+
+<div class="checkout-container">
+
+    <div class="welcome-section">
+
+        <h1>
+            🧾 Checkout
+        </h1>
+
+        <p>
+            Enter your delivery details and choose your payment method.
+        </p>
+
+    </div>
+
+    {% if error %}
+
+        <div class="error">
+            {{ error }}
+        </div>
+
+    {% endif %}
+
+    {% if cart_items %}
+
+        <div class="checkout-grid">
+
+            <div class="card">
+
+                <h3>
+                    📍 Delivery Details
+                </h3>
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    <div class="form-group">
+
+                        <label>
+                            Delivery Address
+                        </label>
+
+                        <textarea
+                            name="address"
+                            placeholder="Enter your complete delivery address"
+                            required
+                        >{{ address|default:"" }}</textarea>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            Phone Number
+                        </label>
+
+                        <input
+                            type="tel"
+                            name="phone"
+                            placeholder="Enter your phone number"
+                            value="{{ phone|default:'' }}"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            Payment Method
+                        </label>
+
+                        <select name="payment_method" required>
+
+                            <option value="">
+                                Select Payment Method
+                            </option>
+
+                            <option value="Cash on Delivery">
+                                💵 Cash on Delivery
+                            </option>
+
+                            <option value="Pay Directly to Farmer">
+                                📱 Pay Directly to Farmer
+                            </option>
+
+                        </select>
+
+                        <div class="payment-info">
+
+                            <strong>Cash on Delivery:</strong>
+                            Pay the farmer in cash when your order is delivered.
+
+                            <br><br>
+
+                            <strong>Pay Directly to Farmer:</strong>
+                            After placing the order, you can call the farmer and ask for their UPI QR code/scanner or other direct payment option.
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="place-order-button"
+                    >
+                        Place Order
+                    </button>
+
+                </form>
+
+                <a
+                    href="{% url 'cart' %}?tab_token={{ tab_token }}"
+                    class="back-button"
+                >
+                    ← Back to Cart
+                </a>
+
+            </div>
+
+            <div class="card">
+
+                <h3>
+                    🛒 Order Summary
+                </h3>
+
+                {% for item in cart_items %}
+
+                    <div class="order-item">
+
+                        <div>
+
+                            <div class="product-name">
+                                {{ item.product.name }}
+                            </div>
+
+                            <div class="product-details">
+
+                                Quantity:
+                                {{ item.quantity }}
+
+                                ×
+
+                                ₹{{ item.product.price|floatformat:2 }}
+
+                            </div>
+
+                        </div>
+
+                        <div class="item-price">
+
+                            ₹{{ item.item_total|floatformat:2 }}
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+                <div class="total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <span>
+                        ₹{{ total|floatformat:2 }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty">
+
+            <div class="empty-icon">
+                🛒
+            </div>
+
+            <h3>
+                Your Cart is Empty
+            </h3>
+
+            <p>
+                Add products to your cart before proceeding to checkout.
+            </p>
+
+            <a
+                href="{% url 'customer_products' %}?tab_token={{ tab_token }}"
+                class="shop-button"
+            >
+                Browse Products
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

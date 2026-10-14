@@ -1,0 +1,504 @@
+{% extends "accounts/base_customer.html" %}
+
+{% block title %}
+Payment | FarmBridge
+{% endblock %}
+
+{% block nav_orders %}
+active
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .payment-container {
+        max-width: 750px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 28px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    }
+
+    .page-header h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+    }
+
+    .page-header p {
+        margin: 0;
+        opacity: 0.92;
+    }
+
+    .payment-card {
+        background: white;
+        border-radius: 14px;
+        padding: 28px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .order-summary {
+        background: #f3f7f1;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    .summary-title {
+        color: #1b5e20;
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        color: #555;
+    }
+
+    .summary-total {
+        border-top: 1px solid #d5ddd5;
+        margin-top: 8px;
+        padding-top: 14px;
+        font-size: 21px;
+        font-weight: 700;
+        color: #1b5e20;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .payment-option {
+        display: block;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 14px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .payment-option:hover {
+        border-color: #2e7d32;
+        background: #f9fcf9;
+    }
+
+    .payment-option input {
+        margin-right: 10px;
+        accent-color: #2e7d32;
+    }
+
+    .option-title {
+        font-weight: 700;
+        color: #333;
+    }
+
+    .option-description {
+        display: block;
+        margin-top: 6px;
+        margin-left: 25px;
+        color: #777;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    /* Farmer contact section */
+
+    .farmer-contact-section {
+        background-color: #f3f7f1;
+        border: 1px solid #c8dfc9;
+        border-left: 4px solid #2e7d32;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .farmer-contact-title {
+        color: #1b5e20;
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .farmer-contact-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 12px;
+        border: 1px solid #e0e0e0;
+    }
+
+    .farmer-name {
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .farmer-phone {
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .call-button {
+        display: inline-block;
+        background-color: #2e7d32;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .call-button:hover {
+        background-color: #1b5e20;
+    }
+
+    .farmer-note {
+        background: #fff8e1;
+        border-left: 4px solid #ff9800;
+        padding: 15px;
+        border-radius: 7px;
+        margin-top: 15px;
+        color: #6d4c00;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .btn-section {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .btn {
+        padding: 11px 20px;
+        border-radius: 7px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-back {
+        background: #eeeeee;
+        color: #333;
+    }
+
+    .btn-back:hover {
+        background: #e0e0e0;
+    }
+
+    .btn-pay {
+        background: #2e7d32;
+        color: white;
+    }
+
+    .btn-pay:hover {
+        background: #1b5e20;
+    }
+
+    .security-note {
+        text-align: center;
+        color: #777;
+        font-size: 13px;
+        margin-top: 18px;
+    }
+
+    @media (max-width: 600px) {
+
+        .payment-card {
+            padding: 20px;
+        }
+
+        .btn-section {
+            flex-direction: column;
+        }
+
+        .btn-section .btn {
+            text-align: center;
+        }
+
+    }
+
+</style>
+
+
+<div class="payment-container">
+
+    <div class="page-header">
+
+        <h1>
+            Payment 💳
+        </h1>
+
+        <p>
+            Choose how you would like to pay for your order.
+        </p>
+
+    </div>
+
+
+    <div class="payment-card">
+
+
+        <!-- ORDER SUMMARY -->
+
+        <div class="order-summary">
+
+            <div class="summary-title">
+                Order Summary
+            </div>
+
+            <div class="summary-row">
+
+                <span>
+                    Order ID
+                </span>
+
+                <strong>
+                    #{{ order.id }}
+                </strong>
+
+            </div>
+
+            <div class="summary-row">
+
+                <span>
+                    Order Status
+                </span>
+
+                <strong>
+                    {{ order.get_status_display }}
+                </strong>
+
+            </div>
+
+            <div class="summary-row summary-total">
+
+                <span>
+                    Amount to Pay
+                </span>
+
+                <span>
+                    ₹{{ order.total_amount|floatformat:2 }}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- PAYMENT METHOD -->
+
+        <div class="section-title">
+            Select Payment Method
+        </div>
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="tab_token"
+                value="{{ tab_token }}"
+            >
+
+
+            <!-- CASH ON DELIVERY -->
+
+            <label class="payment-option">
+
+                <input
+                    type="radio"
+                    name="payment_method"
+                    value="Cash on Delivery"
+                    {% if order.payment_method == "Cash on Delivery" %}checked{% endif %}
+                    required
+                >
+
+                <span class="option-title">
+                    💵 Cash on Delivery
+                </span>
+
+                <span class="option-description">
+                    Pay the farmer when your order is delivered.
+                </span>
+
+            </label>
+
+
+            <!-- DIRECT PAYMENT -->
+
+            <label class="payment-option">
+
+                <input
+                    type="radio"
+                    name="payment_method"
+                    value="Pay Directly to Farmer"
+                    {% if order.payment_method == "Pay Directly to Farmer" %}checked{% endif %}
+                >
+
+                <span class="option-title">
+                    📱 Pay Directly to Farmer
+                </span>
+
+                <span class="option-description">
+                    Contact the farmer and pay directly using UPI
+                    or another payment method.
+                </span>
+
+            </label>
+
+
+            <!-- FARMER CONTACT DETAILS -->
+
+            {% if order.payment_method == "Pay Directly to Farmer" %}
+
+                <div class="farmer-contact-section">
+
+                    <div class="farmer-contact-title">
+                        👨‍🌾 Farmer Contact Details
+                    </div>
+
+
+                    {% if farmer_contacts %}
+
+                        {% for contact in farmer_contacts %}
+
+                            <div class="farmer-contact-card">
+
+                                <div class="farmer-name">
+
+                                    👨‍🌾
+                                    {{ contact.farmer.get_full_name|default:contact.farmer.username }}
+
+                                </div>
+
+
+                                {% if contact.phone %}
+
+                                    <div class="farmer-phone">
+
+                                        📞
+                                        {{ contact.phone }}
+
+                                    </div>
+
+
+                                    <a
+                                        href="tel:{{ contact.phone }}"
+                                        class="call-button"
+                                    >
+                                        📞 Call Farmer
+                                    </a>
+
+                                {% else %}
+
+                                    <div class="farmer-phone">
+
+                                        📞 Phone number not available.
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <div class="farmer-note">
+
+                            Farmer contact details are currently
+                            unavailable.
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <div class="farmer-note">
+
+                        <strong>
+                            How to pay:
+                        </strong>
+
+                        <br><br>
+
+                        1. Contact the farmer using the phone number above.
+
+                        <br>
+
+                        2. Ask the farmer for their UPI ID, QR code,
+                        or preferred payment method.
+
+                        <br>
+
+                        3. Make the payment directly to the farmer.
+
+                        <br>
+
+                        4. After receiving the payment, the farmer
+                        can mark the order as <strong>Paid</strong>.
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- BUTTONS -->
+
+            <div class="btn-section">
+
+                <a
+                    href="{% url 'customer_orders' %}?tab_token={{ tab_token }}"
+                    class="btn btn-back"
+                >
+                    ← Back
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn btn-pay"
+                >
+                    Confirm Payment Method
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <div class="security-note">
+
+            🔒 FarmBridge payment processing is handled directly
+            between customer and farmer.
+
+        </div>
+
+
+    </div>
+
+</div>
+
+{% endblock %}

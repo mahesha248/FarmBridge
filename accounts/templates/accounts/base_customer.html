@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}FarmBridge{% endblock %}</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            background-color: #f3f7f1;
+            color: #333;
+        }
+
+
+        /* ================= HEADER ================= */
+
+        #farmbridge-header {
+            width: 100%;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            margin: 0;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+        }
+
+
+        #farmbridge-header h1 {
+            margin: 0;
+            padding: 0;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 30px;
+            font-weight: bold;
+            line-height: 36px;
+        }
+
+
+        #farmbridge-header p {
+            margin: 6px 0 0;
+            padding: 0;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            line-height: 20px;
+            opacity: 0.92;
+        }
+
+
+        /* ================= NAVIGATION ================= */
+
+        #farmbridge-nav {
+            width: 100%;
+            background-color: #1b5e20;
+            margin: 0;
+            padding: 8px 15px;
+            text-align: center;
+            white-space: nowrap;
+            overflow-x: auto;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+        }
+
+
+        #farmbridge-nav::-webkit-scrollbar {
+            height: 4px;
+        }
+
+
+        #farmbridge-nav::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.35);
+            border-radius: 5px;
+        }
+
+
+        #farmbridge-nav a {
+            position: relative;
+            display: inline-block;
+            color: white;
+            background-color: transparent;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            font-weight: bold;
+            margin: 0 8px;
+            padding: 9px 12px 11px;
+            border: none;
+            border-radius: 6px;
+            vertical-align: top;
+            transition: 0.2s;
+        }
+
+
+        #farmbridge-nav a:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.10);
+            text-decoration: none;
+        }
+
+
+        #farmbridge-nav a.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.10);
+        }
+
+
+        #farmbridge-nav a.active::after {
+            content: "";
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: 4px;
+            height: 2px;
+            background-color: white;
+            border-radius: 2px;
+        }
+
+
+        /* ================= MAIN CONTAINER ================= */
+
+        .farmbridge-container {
+            width: 100%;
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+
+        /* ================= MESSAGE ================= */
+
+        .message {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px 18px;
+            margin: 0 auto 20px auto;
+            border-radius: 8px;
+            border: 1px solid #c8e6c9;
+            font-weight: bold;
+            text-align: center;
+            max-width: 700px;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+
+        .message.hide {
+            opacity: 0;
+        }
+
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 700px) {
+
+            #farmbridge-header {
+                padding: 20px 15px;
+            }
+
+
+            #farmbridge-header h1 {
+                font-size: 25px;
+            }
+
+
+            #farmbridge-header p {
+                font-size: 14px;
+            }
+
+
+            #farmbridge-nav {
+                text-align: left;
+                padding: 7px 10px;
+            }
+
+
+            #farmbridge-nav a {
+                margin: 0 4px;
+                padding: 8px 9px 10px;
+                font-size: 13px;
+            }
+
+
+            #farmbridge-nav a.active::after {
+                left: 9px;
+                right: 9px;
+            }
+
+
+            .farmbridge-container {
+                padding: 20px 12px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ================= HEADER ================= -->
+
+    <div id="farmbridge-header">
+
+        <h1>🌱 FarmBridge</h1>
+
+        <p>Customer Portal</p>
+
+    </div>
+
+
+    <!-- ================= NAVIGATION ================= -->
+
+    <div id="farmbridge-nav">
+
+        <a href="{% url 'customer_dashboard' %}?tab_token={{ tab_token }}"
+           class="{% block nav_dashboard %}{% endblock %}">
+            🏠 Dashboard
+        </a>
+
+
+        <a href="{% url 'customer_products' %}?tab_token={{ tab_token }}"
+           class="{% block nav_products %}{% endblock %}">
+            🛍️ Browse Products
+        </a>
+
+
+        <a href="{% url 'cart' %}?tab_token={{ tab_token }}"
+           class="{% block nav_cart %}{% endblock %}">
+            🛒 My Cart
+        </a>
+
+
+        <a href="{% url 'customer_orders' %}?tab_token={{ tab_token }}"
+           class="{% block nav_orders %}{% endblock %}">
+            📦 My Orders
+        </a>
+
+
+        <a href="{% url 'customer_profile' %}?tab_token={{ tab_token }}"
+           class="{% block nav_profile %}{% endblock %}">
+            👤 Profile
+        </a>
+
+
+        <a href="{% url 'logout' %}?tab_token={{ tab_token }}">
+            🚪 Logout
+        </a>
+
+    </div>
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <div class="farmbridge-container">
+
+
+        <!-- ================= MESSAGE ================= -->
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                {% if forloop.first %}
+
+                    <div class="message" id="success-message">
+                        {{ message }}
+                    </div>
+
+                {% endif %}
+
+            {% endfor %}
+
+        {% endif %}
+
+
+        {% block content %}
+        {% endblock %}
+
+
+    </div>
+
+
+    <!-- ================= MESSAGE AUTO HIDE ================= -->
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const messages = document.querySelectorAll(".message");
+
+
+            /*
+             * If more than one message exists,
+             * keep only the first one.
+             */
+
+            if (messages.length > 1) {
+
+                for (let i = 1; i < messages.length; i++) {
+
+                    messages[i].remove();
+
+                }
+
+            }
+
+
+            const message = document.querySelector(".message");
+
+
+            if (message) {
+
+                setTimeout(function() {
+
+                    message.classList.add("hide");
+
+
+                    setTimeout(function() {
+
+                        message.remove();
+
+                    }, 500);
+
+                }, 3000);
+
+            }
+
+        });
+
+    </script>
+
+
+</body>
+
+</html>

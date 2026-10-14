@@ -1,0 +1,1315 @@
+{% extends "accounts/base_farmer.html" %}
+{% load static %}
+
+{% block title %}
+Add Product | FarmBridge
+{% endblock %}
+
+{% block nav_products %}
+active
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .product-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 32px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.10);
+    }
+
+    .page-header::after {
+        content: "🌾";
+        position: absolute;
+        right: 25px;
+        bottom: -30px;
+        font-size: 130px;
+        opacity: 0.08;
+    }
+
+    .page-header h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .page-header p {
+        margin: 0;
+        opacity: 0.92;
+        font-size: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 14px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border-top: 4px solid #2e7d32;
+    }
+
+    .section-title {
+        font-size: 19px;
+        font-weight: 700;
+        color: #1b5e20;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e8f5e9;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 5px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 7px;
+        color: #444;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 12px 13px;
+        border: 1px solid #d5d5d5;
+        border-radius: 8px;
+        font-size: 14px;
+        box-sizing: border-box;
+        outline: none;
+        transition: 0.2s;
+        font-family: inherit;
+        background: white;
+    }
+
+    input:hover,
+    select:hover,
+    textarea:hover {
+        border-color: #a5d6a7;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46,125,50,0.10);
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 110px;
+    }
+
+    .required {
+        color: #d32f2f;
+    }
+
+    .freshness-info {
+        margin-top: 7px;
+        color: #777;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .freshness-box {
+        background: #f8fbf8;
+        border-left: 4px solid #81c784;
+        padding: 12px 14px;
+        border-radius: 7px;
+        margin-top: 8px;
+        color: #555;
+        font-size: 13px;
+    }
+
+    .image-section {
+        margin-top: 32px;
+    }
+
+    .image-help {
+        color: #777;
+        font-size: 13px;
+        margin-bottom: 18px;
+        background: #f8fbf8;
+        padding: 12px 14px;
+        border-radius: 7px;
+        border-left: 4px solid #81c784;
+    }
+
+    .image-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+    }
+
+    .image-option {
+        position: relative;
+        display: none;
+    }
+
+    .image-option input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .image-option label {
+        cursor: pointer;
+        margin: 0;
+        border: 2px solid #eeeeee;
+        border-radius: 10px;
+        overflow: hidden;
+        background: white;
+        transition: 0.2s;
+        display: block;
+    }
+
+    .image-option label:hover {
+        border-color: #81c784;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 12px rgba(0,0,0,0.08);
+    }
+
+    .image-option input:checked + label {
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46,125,50,0.15);
+    }
+
+    .image-option img {
+        width: 100%;
+        height: 125px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .image-name {
+        padding: 10px 6px;
+        text-align: center;
+        font-size: 12px;
+        color: #555;
+        font-weight: 600;
+        background: #fafafa;
+    }
+
+    .select-category-message {
+        background: #f5f9f5;
+        border: 1px dashed #a5d6a7;
+        color: #666;
+        padding: 25px;
+        border-radius: 9px;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    .error-message {
+        background: #ffebee;
+        color: #c62828;
+        padding: 13px 16px;
+        border-radius: 7px;
+        margin-bottom: 20px;
+        border-left: 4px solid #c62828;
+    }
+
+    .button-section {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eeeeee;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-cancel {
+        background: #eeeeee;
+        color: #333;
+    }
+
+    .btn-cancel:hover {
+        background: #e0e0e0;
+        transform: translateY(-1px);
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+    }
+
+    .btn-save:hover {
+        background: #1b5e20;
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 900px) {
+
+        .image-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+    }
+
+    @media (max-width: 700px) {
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .full-width {
+            grid-column: auto;
+        }
+
+        .image-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .form-card {
+            padding: 20px;
+        }
+
+        .page-header {
+            padding: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 26px;
+        }
+
+    }
+
+    @media (max-width: 500px) {
+
+        .image-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .button-section {
+            flex-direction: column;
+        }
+
+        .button-section .btn {
+            text-align: center;
+        }
+
+        .page-header::after {
+            display: none;
+        }
+
+    }
+
+</style>
+
+<div class="product-container">
+
+    <div class="page-header">
+
+        <h1>
+            Add New Product 🌱
+        </h1>
+
+        <p>
+            Add your fresh agricultural products to the FarmBridge marketplace.
+        </p>
+
+    </div>
+
+    <div class="form-card">
+
+        {% if error %}
+
+            <div class="error-message">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="tab_token"
+                value="{{ tab_token }}"
+            >
+
+            <div class="section-title">
+                Product Information
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="name">
+                        Product Name <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Enter product name"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="category">
+                        Category <span class="required">*</span>
+                    </label>
+
+                    <select
+                        id="category"
+                        name="category"
+                        required
+                        onchange="showImages()"
+                    >
+
+                        <option value="">
+                            Select Category
+                        </option>
+
+                        <option value="Vegetables">
+                            Vegetables
+                        </option>
+
+                        <option value="Fruits">
+                            Fruits
+                        </option>
+
+                        <option value="Grains">
+                            Grains
+                        </option>
+
+                        <option value="Pulses">
+                            Pulses
+                        </option>
+
+                        <option value="Spices">
+                            Spices
+                        </option>
+
+                        <option value="Dairy">
+                            Dairy
+                        </option>
+
+                        <option value="Eggs">
+                            Eggs
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="price">
+                        Price (₹) <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="number"
+                        id="price"
+                        name="price"
+                        step="0.01"
+                        min="0.01"
+                        placeholder="Enter price"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="quantity">
+                        Available Quantity <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="number"
+                        id="quantity"
+                        name="quantity"
+                        step="0.01"
+                        min="0.01"
+                        placeholder="Enter quantity"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="freshness_days">
+                        Freshness Duration <span class="required">*</span>
+                    </label>
+
+                    <select
+                        id="freshness_days"
+                        name="freshness_days"
+                        required
+                    >
+
+                        <option value="1">
+                            1 Day
+                        </option>
+
+                        <option value="2">
+                            2 Days
+                        </option>
+
+                        <option value="3" selected>
+                            3 Days
+                        </option>
+
+                        <option value="4">
+                            4 Days
+                        </option>
+
+                        <option value="5">
+                            5 Days
+                        </option>
+
+                        <option value="7">
+                            7 Days
+                        </option>
+
+                        <option value="10">
+                            10 Days
+                        </option>
+
+                        <option value="15">
+                            15 Days
+                        </option>
+
+                    </select>
+
+                    <div class="freshness-info">
+                        Select how many days this product will remain fresh.
+                    </div>
+
+                </div>
+
+                <div class="form-group full-width">
+
+                    <div class="freshness-box">
+                        🌱 The product will automatically become expired
+                        after the selected freshness duration.
+                    </div>
+
+                </div>
+
+                <div class="form-group full-width">
+
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Enter product description"
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+            <div class="image-section">
+
+                <div class="section-title">
+                    Select Product Image
+                </div>
+
+                <div class="image-help">
+                    Select a category first. Then choose one image that best represents your product.
+                </div>
+
+                <div id="selectCategoryMessage" class="select-category-message">
+                    Please select a category to view available product images.
+                </div>
+
+                <div id="imageGrid" class="image-grid">
+
+                    <!-- VEGETABLES -->
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" name="image" id="veg1" value="products/vegetables/tomato.jpg">
+                        <label for="veg1">
+                            <img src="{% static 'products/vegetables/tomato.jpg' %}">
+                            <div class="image-name">Tomato</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" name="image" id="veg2" value="products/vegetables/potato.jpg">
+                        <label for="veg2">
+                            <img src="{% static 'products/vegetables/potato.jpg' %}">
+                            <div class="image-name">Potato</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" name="image" id="veg3" value="products/vegetables/onion.jpg">
+                        <label for="veg3">
+                            <img src="{% static 'products/vegetables/onion.jpg' %}">
+                            <div class="image-name">Onion</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" name="image" id="veg4" value="products/vegetables/carrot.jpg">
+                        <label for="veg4">
+                            <img src="{% static 'products/vegetables/carrot.jpg' %}">
+                            <div class="image-name">Carrot</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" name="image" id="veg5" value="products/vegetables/brinjal.jpg">
+                        <label for="veg5">
+                            <img src="{% static 'products/vegetables/brinjal.jpg' %}">
+                            <div class="image-name">Brinjal</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" name="image" id="veg6" value="products/vegetables/cabbage.jpg">
+                        <label for="veg6">
+                            <img src="{% static 'products/vegetables/cabbage.jpg' %}">
+                            <div class="image-name">Cabbage</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" name="image" id="veg7" value="products/vegetables/cauliflower.jpg">
+                        <label for="veg7">
+                            <img src="{% static 'products/vegetables/cauliflower.jpg' %}">
+                            <div class="image-name">Cauliflower</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" name="image" id="veg8" value="products/vegetables/beans.jpg">
+                        <label for="veg8">
+                            <img src="{% static 'products/vegetables/beans.jpg' %}">
+                            <div class="image-name">Beans</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" name="image" id="veg9" value="products/vegetables/spinach.jpg">
+                        <label for="veg9">
+                            <img src="{% static 'products/vegetables/spinach.jpg' %}">
+                            <div class="image-name">Spinach</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" name="image" id="veg10" value="products/vegetables/green_chilli.jpg">
+                        <label for="veg10">
+                            <img src="{% static 'products/vegetables/green_chilli.jpg' %}">
+                            <div class="image-name">Green Chilli</div>
+                        </label>
+                    </div>
+
+                    <!-- FRUITS -->
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" name="image" id="fruit1" value="products/fruits/apple.jpg">
+                        <label for="fruit1">
+                            <img src="{% static 'products/fruits/apple.jpg' %}">
+                            <div class="image-name">Apple</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" name="image" id="fruit2" value="products/fruits/banana.jpg">
+                        <label for="fruit2">
+                            <img src="{% static 'products/fruits/banana.jpg' %}">
+                            <div class="image-name">Banana</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" name="image" id="fruit3" value="products/fruits/mango.jpg">
+                        <label for="fruit3">
+                            <img src="{% static 'products/fruits/mango.jpg' %}">
+                            <div class="image-name">Mango</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" name="image" id="fruit4" value="products/fruits/orange.jpg">
+                        <label for="fruit4">
+                            <img src="{% static 'products/fruits/orange.jpg' %}">
+                            <div class="image-name">Orange</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" name="image" id="fruit5" value="products/fruits/grapes.jpg">
+                        <label for="fruit5">
+                            <img src="{% static 'products/fruits/grapes.jpg' %}">
+                            <div class="image-name">Grapes</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" name="image" id="fruit6" value="products/fruits/papaya.jpg">
+                        <label for="fruit6">
+                            <img src="{% static 'products/fruits/papaya.jpg' %}">
+                            <div class="image-name">Papaya</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" name="image" id="fruit7" value="products/fruits/guava.jpg">
+                        <label for="fruit7">
+                            <img src="{% static 'products/fruits/guava.jpg' %}">
+                            <div class="image-name">Guava</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" name="image" id="fruit8" value="products/fruits/pomegranate.jpg">
+                        <label for="fruit8">
+                            <img src="{% static 'products/fruits/pomegranate.jpg' %}">
+                            <div class="image-name">Pomegranate</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" name="image" id="fruit9" value="products/fruits/watermelon.jpg">
+                        <label for="fruit9">
+                            <img src="{% static 'products/fruits/watermelon.jpg' %}">
+                            <div class="image-name">Watermelon</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" name="image" id="fruit10" value="products/fruits/pineapple.jpg">
+                        <label for="fruit10">
+                            <img src="{% static 'products/fruits/pineapple.jpg' %}">
+                            <div class="image-name">Pineapple</div>
+                        </label>
+                    </div>
+
+                    <!-- GRAINS -->
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" name="image" id="grain1" value="products/grains/rice.jpg">
+                        <label for="grain1">
+                            <img src="{% static 'products/grains/rice.jpg' %}">
+                            <div class="image-name">Rice</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" name="image" id="grain2" value="products/grains/wheat.jpg">
+                        <label for="grain2">
+                            <img src="{% static 'products/grains/wheat.jpg' %}">
+                            <div class="image-name">Wheat</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" name="image" id="grain3" value="products/grains/maize.jpg">
+                        <label for="grain3">
+                            <img src="{% static 'products/grains/maize.jpg' %}">
+                            <div class="image-name">Maize</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" name="image" id="grain4" value="products/grains/barley.jpg">
+                        <label for="grain4">
+                            <img src="{% static 'products/grains/barley.jpg' %}">
+                            <div class="image-name">Barley</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" name="image" id="grain5" value="products/grains/oats.jpg">
+                        <label for="grain5">
+                            <img src="{% static 'products/grains/oats.jpg' %}">
+                            <div class="image-name">Oats</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" name="image" id="grain6" value="products/grains/ragi.jpg">
+                        <label for="grain6">
+                            <img src="{% static 'products/grains/ragi.jpg' %}">
+                            <div class="image-name">Ragi</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" name="image" id="grain7" value="products/grains/jowar.jpg">
+                        <label for="grain7">
+                            <img src="{% static 'products/grains/jowar.jpg' %}">
+                            <div class="image-name">Jowar</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" name="image" id="grain8" value="products/grains/bajra.jpg">
+                        <label for="grain8">
+                            <img src="{% static 'products/grains/bajra.jpg' %}">
+                            <div class="image-name">Bajra</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" name="image" id="grain9" value="products/grains/brown_rice.jpg">
+                        <label for="grain9">
+                            <img src="{% static 'products/grains/brown_rice.jpg' %}">
+                            <div class="image-name">Brown Rice</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" name="image" id="grain10" value="products/grains/corn.jpg">
+                        <label for="grain10">
+                            <img src="{% static 'products/grains/corn.jpg' %}">
+                            <div class="image-name">Corn</div>
+                        </label>
+                    </div>
+
+                    <!-- PULSES -->
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" name="image" id="pulse1" value="products/pulses/toor_dal.jpg">
+                        <label for="pulse1">
+                            <img src="{% static 'products/pulses/toor_dal.jpg' %}">
+                            <div class="image-name">Toor Dal</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" name="image" id="pulse2" value="products/pulses/moong_dal.jpg">
+                        <label for="pulse2">
+                            <img src="{% static 'products/pulses/moong_dal.jpg' %}">
+                            <div class="image-name">Moong Dal</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" name="image" id="pulse3" value="products/pulses/urad_dal.jpg">
+                        <label for="pulse3">
+                            <img src="{% static 'products/pulses/urad_dal.jpg' %}">
+                            <div class="image-name">Urad Dal</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" name="image" id="pulse4" value="products/pulses/chana_dal.jpg">
+                        <label for="pulse4">
+                            <img src="{% static 'products/pulses/chana_dal.jpg' %}">
+                            <div class="image-name">Chana Dal</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" name="image" id="pulse5" value="products/pulses/masoor_dal.jpg">
+                        <label for="pulse5">
+                            <img src="{% static 'products/pulses/masoor_dal.jpg' %}">
+                            <div class="image-name">Masoor Dal</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" name="image" id="pulse6" value="products/pulses/chickpeas.jpg">
+                        <label for="pulse6">
+                            <img src="{% static 'products/pulses/chickpeas.jpg' %}">
+                            <div class="image-name">Chickpeas</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" name="image" id="pulse7" value="products/pulses/green_gram.jpg">
+                        <label for="pulse7">
+                            <img src="{% static 'products/pulses/green_gram.jpg' %}">
+                            <div class="image-name">Green Gram</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" name="image" id="pulse8" value="products/pulses/black_gram.jpg">
+                        <label for="pulse8">
+                            <img src="{% static 'products/pulses/black_gram.jpg' %}">
+                            <div class="image-name">Black Gram</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" name="image" id="pulse9" value="products/pulses/kidney_beans.jpg">
+                        <label for="pulse9">
+                            <img src="{% static 'products/pulses/kidney_beans.jpg' %}">
+                            <div class="image-name">Kidney Beans</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" name="image" id="pulse10" value="products/pulses/black_eyed_peas.jpg">
+                        <label for="pulse10">
+                            <img src="{% static 'products/pulses/black_eyed_peas.jpg' %}">
+                            <div class="image-name">Black Eyed Peas</div>
+                        </label>
+                    </div>
+
+                    <!-- SPICES -->
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" name="image" id="spice1" value="products/spices/chilli.jpg">
+                        <label for="spice1">
+                            <img src="{% static 'products/spices/chilli.jpg' %}">
+                            <div class="image-name">Chilli</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" name="image" id="spice2" value="products/spices/turmeric.jpg">
+                        <label for="spice2">
+                            <img src="{% static 'products/spices/turmeric.jpg' %}">
+                            <div class="image-name">Turmeric</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" name="image" id="spice3" value="products/spices/ginger.jpg">
+                        <label for="spice3">
+                            <img src="{% static 'products/spices/ginger.jpg' %}">
+                            <div class="image-name">Ginger</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" name="image" id="spice4" value="products/spices/garlic.jpg">
+                        <label for="spice4">
+                            <img src="{% static 'products/spices/garlic.jpg' %}">
+                            <div class="image-name">Garlic</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" name="image" id="spice5" value="products/spices/black_pepper.jpg">
+                        <label for="spice5">
+                            <img src="{% static 'products/spices/black_pepper.jpg' %}">
+                            <div class="image-name">Black Pepper</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" name="image" id="spice6" value="products/spices/cardamom.jpg">
+                        <label for="spice6">
+                            <img src="{% static 'products/spices/cardamom.jpg' %}">
+                            <div class="image-name">Cardamom</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" name="image" id="spice7" value="products/spices/cloves.jpg">
+                        <label for="spice7">
+                            <img src="{% static 'products/spices/cloves.jpg' %}">
+                            <div class="image-name">Cloves</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" name="image" id="spice8" value="products/spices/cinnamon.jpg">
+                        <label for="spice8">
+                            <img src="{% static 'products/spices/cinnamon.jpg' %}">
+                            <div class="image-name">Cinnamon</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" name="image" id="spice9" value="products/spices/cumin.jpg">
+                        <label for="spice9">
+                            <img src="{% static 'products/spices/cumin.jpg' %}">
+                            <div class="image-name">Cumin</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" name="image" id="spice10" value="products/spices/coriander.jpg">
+                        <label for="spice10">
+                            <img src="{% static 'products/spices/coriander.jpg' %}">
+                            <div class="image-name">Coriander</div>
+                        </label>
+                    </div>
+
+                    <!-- DAIRY -->
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" name="image" id="dairy1" value="products/dairy/milk.jpg">
+                        <label for="dairy1">
+                            <img src="{% static 'products/dairy/milk.jpg' %}">
+                            <div class="image-name">Milk</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" name="image" id="dairy2" value="products/dairy/curd.jpg">
+                        <label for="dairy2">
+                            <img src="{% static 'products/dairy/curd.jpg' %}">
+                            <div class="image-name">Curd</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" name="image" id="dairy3" value="products/dairy/butter.jpg">
+                        <label for="dairy3">
+                            <img src="{% static 'products/dairy/butter.jpg' %}">
+                            <div class="image-name">Butter</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" name="image" id="dairy4" value="products/dairy/ghee.jpg">
+                        <label for="dairy4">
+                            <img src="{% static 'products/dairy/ghee.jpg' %}">
+                            <div class="image-name">Ghee</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" name="image" id="dairy5" value="products/dairy/paneer.jpg">
+                        <label for="dairy5">
+                            <img src="{% static 'products/dairy/paneer.jpg' %}">
+                            <div class="image-name">Paneer</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" name="image" id="dairy6" value="products/dairy/cheese.jpg">
+                        <label for="dairy6">
+                            <img src="{% static 'products/dairy/cheese.jpg' %}">
+                            <div class="image-name">Cheese</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" name="image" id="dairy7" value="products/dairy/buttermilk.jpg">
+                        <label for="dairy7">
+                            <img src="{% static 'products/dairy/buttermilk.jpg' %}">
+                            <div class="image-name">Buttermilk</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" name="image" id="dairy8" value="products/dairy/cream.jpg">
+                        <label for="dairy8">
+                            <img src="{% static 'products/dairy/cream.jpg' %}">
+                            <div class="image-name">Cream</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" name="image" id="dairy9" value="products/dairy/khoya.jpg">
+                        <label for="dairy9">
+                            <img src="{% static 'products/dairy/khoya.jpg' %}">
+                            <div class="image-name">Khoya</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" name="image" id="dairy10" value="products/dairy/lassi.jpg">
+                        <label for="dairy10">
+                            <img src="{% static 'products/dairy/lassi.jpg' %}">
+                            <div class="image-name">Lassi</div>
+                        </label>
+                    </div>
+
+                    <!-- EGGS -->
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" name="image" id="egg1" value="products/eggs/chicken_egg.jpg">
+                        <label for="egg1">
+                            <img src="{% static 'products/eggs/chicken_egg.jpg' %}">
+                            <div class="image-name">Chicken Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" name="image" id="egg2" value="products/eggs/country_egg.jpg">
+                        <label for="egg2">
+                            <img src="{% static 'products/eggs/country_egg.jpg' %}">
+                            <div class="image-name">Country Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" name="image" id="egg3" value="products/eggs/duck_egg.jpg">
+                        <label for="egg3">
+                            <img src="{% static 'products/eggs/duck_egg.jpg' %}">
+                            <div class="image-name">Duck Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" name="image" id="egg4" value="products/eggs/quail_egg.jpg">
+                        <label for="egg4">
+                            <img src="{% static 'products/eggs/quail_egg.jpg' %}">
+                            <div class="image-name">Quail Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" name="image" id="egg5" value="products/eggs/organic_egg.jpg">
+                        <label for="egg5">
+                            <img src="{% static 'products/eggs/organic_egg.jpg' %}">
+                            <div class="image-name">Organic Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" name="image" id="egg6" value="products/eggs/white_egg.jpg">
+                        <label for="egg6">
+                            <img src="{% static 'products/eggs/white_egg.jpg' %}">
+                            <div class="image-name">White Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" name="image" id="egg7" value="products/eggs/brown_egg.jpg">
+                        <label for="egg7">
+                            <img src="{% static 'products/eggs/brown_egg.jpg' %}">
+                            <div class="image-name">Brown Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" name="image" id="egg8" value="products/eggs/free_range_egg.jpg">
+                        <label for="egg8">
+                            <img src="{% static 'products/eggs/free_range_egg.jpg' %}">
+                            <div class="image-name">Free Range Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" name="image" id="egg9" value="products/eggs/farm_egg.jpg">
+                        <label for="egg9">
+                            <img src="{% static 'products/eggs/farm_egg.jpg' %}">
+                            <div class="image-name">Farm Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" name="image" id="egg10" value="products/eggs/jumbo_egg.jpg">
+                        <label for="egg10">
+                            <img src="{% static 'products/eggs/jumbo_egg.jpg' %}">
+                            <div class="image-name">Jumbo Egg</div>
+                        </label>
+                    </div>
+
+                    <!-- OTHER -->
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" name="image" id="other1" value="products/other/honey.jpg">
+                        <label for="other1">
+                            <img src="{% static 'products/other/honey.jpg' %}">
+                            <div class="image-name">Honey</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" name="image" id="other2" value="products/other/jaggery.jpg">
+                        <label for="other2">
+                            <img src="{% static 'products/other/jaggery.jpg' %}">
+                            <div class="image-name">Jaggery</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" name="image" id="other3" value="products/other/sugarcane.jpg">
+                        <label for="other3">
+                            <img src="{% static 'products/other/sugarcane.jpg' %}">
+                            <div class="image-name">Sugarcane</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" name="image" id="other4" value="products/other/coconut.jpg">
+                        <label for="other4">
+                            <img src="{% static 'products/other/coconut.jpg' %}">
+                            <div class="image-name">Coconut</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" name="image" id="other5" value="products/other/dry_fruits.jpg">
+                        <label for="other5">
+                            <img src="{% static 'products/other/dry_fruits.jpg' %}">
+                            <div class="image-name">Dry Fruits</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" name="image" id="other6" value="products/other/cashew.jpg">
+                        <label for="other6">
+                            <img src="{% static 'products/other/cashew.jpg' %}">
+                            <div class="image-name">Cashew</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" name="image" id="other7" value="products/other/almonds.jpg">
+                        <label for="other7">
+                            <img src="{% static 'products/other/almonds.jpg' %}">
+                            <div class="image-name">Almonds</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" name="image" id="other8" value="products/other/peanuts.jpg">
+                        <label for="other8">
+                            <img src="{% static 'products/other/peanuts.jpg' %}">
+                            <div class="image-name">Peanuts</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" name="image" id="other9" value="products/other/sesame.jpg">
+                        <label for="other9">
+                            <img src="{% static 'products/other/sesame.jpg' %}">
+                            <div class="image-name">Sesame</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" name="image" id="other10" value="products/other/flax_seeds.jpg">
+                        <label for="other10">
+                            <img src="{% static 'products/other/flax_seeds.jpg' %}">
+                            <div class="image-name">Flax Seeds</div>
+                        </label>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="button-section">
+
+                <a
+                    href="{% url 'my_products' %}?tab_token={{ tab_token }}"
+                    class="btn btn-cancel"
+                >
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn btn-save"
+                >
+                    Add Product
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+    function showImages() {
+
+        const category =
+            document.getElementById("category").value;
+
+        const images =
+            document.querySelectorAll(".image-option");
+
+        const message =
+            document.getElementById("selectCategoryMessage");
+
+        let found = false;
+
+        images.forEach(function(image) {
+
+            const radio =
+                image.querySelector("input");
+
+            if (image.dataset.category === category) {
+
+                image.style.display = "block";
+                found = true;
+
+            } else {
+
+                image.style.display = "none";
+                radio.checked = false;
+
+            }
+
+        });
+
+        if (category === "") {
+
+            message.style.display = "block";
+            message.innerHTML =
+                "Please select a category to view available product images.";
+
+        } else if (found) {
+
+            message.style.display = "none";
+
+        } else {
+
+            message.style.display = "block";
+            message.innerHTML =
+                "No images available for this category.";
+
+        }
+
+    }
+
+    showImages();
+
+</script>
+
+{% endblock %}

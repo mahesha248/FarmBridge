@@ -1,0 +1,535 @@
+{% extends "accounts/base_farmer.html" %}
+
+{% block title %}
+My Orders | FarmBridge
+{% endblock %}
+
+{% block nav_orders %}
+active
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .orders-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    /* Dashboard-style top bar */
+
+    .welcome-section {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 30px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .welcome-content h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+    }
+
+    .welcome-content p {
+        margin: 0;
+        opacity: 0.92;
+    }
+
+    .order-card {
+        background-color: white;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+        border: 1px solid #eeeeee;
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eeeeee;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    .order-header h3 {
+        margin: 0;
+        color: #1b5e20;
+        font-size: 21px;
+    }
+
+    .order-date {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .customer-info {
+        background-color: #f3f7f1;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #2e7d32;
+    }
+
+    .customer-info p {
+        margin: 6px 0;
+        color: #444;
+    }
+
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 700px;
+    }
+
+    th {
+        background-color: #2e7d32;
+        color: white;
+        padding: 13px;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    td {
+        padding: 13px;
+        text-align: center;
+        border-bottom: 1px solid #eeeeee;
+        color: #444;
+        font-size: 14px;
+    }
+
+    tr:hover {
+        background-color: #f3f7f1;
+    }
+
+    .status {
+        display: inline-block;
+        padding: 6px 11px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    .placed {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .confirmed {
+        background-color: #cfe2ff;
+        color: #084298;
+    }
+
+    .preparing {
+        background-color: #e2d9f3;
+        color: #432874;
+    }
+
+    .shipped {
+        background-color: #cff4fc;
+        color: #055160;
+    }
+
+    .delivered {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .update-form {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .status-select {
+        padding: 8px 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+        background-color: white;
+    }
+
+    .update-button {
+        background-color: #1565c0;
+        color: white;
+        border: none;
+        padding: 8px 13px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .update-button:hover {
+        background-color: #0d47a1;
+    }
+
+    .payment-info {
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid #eeeeee;
+        color: #555;
+    }
+
+    .payment-paid {
+        color: #2e7d32;
+        font-weight: bold;
+    }
+
+    .payment-pending {
+        color: #856404;
+        font-weight: bold;
+    }
+
+    .payment-action {
+        margin-top: 15px;
+    }
+
+    .paid-button {
+        background-color: #2e7d32;
+        color: white;
+        padding: 9px 16px;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .paid-button:hover {
+        background-color: #1b5e20;
+    }
+
+    .empty {
+        background-color: white;
+        padding: 45px;
+        border-radius: 14px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+
+    .empty h3 {
+        color: #2e7d32;
+        margin-bottom: 8px;
+    }
+
+    .empty p {
+        color: #666;
+    }
+
+    @media (max-width: 700px) {
+
+        .welcome-section {
+            padding: 22px;
+        }
+
+        .welcome-content h1 {
+            font-size: 23px;
+        }
+
+        .order-card {
+            padding: 18px;
+        }
+
+        .order-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .update-form {
+            flex-direction: column;
+        }
+
+    }
+
+</style>
+
+
+<div class="orders-container">
+
+
+    <!-- Dashboard-style Header -->
+
+    <div class="welcome-section">
+
+        <div class="welcome-content">
+
+            <h1>
+                Customer Orders 📦
+            </h1>
+
+            <p>
+                View customer orders and update the status of your products.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if orders %}
+
+        {% for order in orders %}
+
+        <div class="order-card">
+
+
+            <div class="order-header">
+
+                <h3>
+                    Order #{{ order.id }}
+                </h3>
+
+                <div class="order-date">
+                    {{ order.created_at|date:"d M Y, h:i A" }}
+                </div>
+
+            </div>
+
+
+            <div class="customer-info">
+
+                <p>
+                    <strong>Customer:</strong>
+                    {{ order.customer.username }}
+                </p>
+
+                <p>
+                    <strong>Address:</strong>
+                    {{ order.address }}
+                </p>
+
+                <p>
+                    <strong>Phone:</strong>
+                    {{ order.phone }}
+                </p>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <tr>
+
+                        <th>Product</th>
+
+                        <th>Category</th>
+
+                        <th>Quantity</th>
+
+                        <th>Price</th>
+
+                        <th>Status</th>
+
+                        <th>Update Status</th>
+
+                    </tr>
+
+
+                    {% for item in order.farmer_items %}
+
+                    <tr>
+
+                        <td>
+                            {{ item.product.name }}
+                        </td>
+
+                        <td>
+                            {{ item.product.category }}
+                        </td>
+
+                        <td>
+                            {{ item.quantity }}
+                        </td>
+
+                        <td>
+                            ₹{{ item.price|floatformat:2 }}
+                        </td>
+
+                        <td>
+
+                            <span class="status {{ item.status }}">
+                                {{ item.get_status_display }}
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <form
+                                method="POST"
+                                action="{% url 'update_order_status' order.id %}?tab_token={{ tab_token }}"
+                                class="update-form"
+                            >
+
+                                {% csrf_token %}
+
+                                <input
+                                    type="hidden"
+                                    name="item_id"
+                                    value="{{ item.id }}"
+                                >
+
+                                <select
+                                    name="status"
+                                    class="status-select"
+                                >
+
+                                    <option
+                                        value="placed"
+                                        {% if item.status == "placed" %}selected{% endif %}
+                                    >
+                                        Placed
+                                    </option>
+
+                                    <option
+                                        value="confirmed"
+                                        {% if item.status == "confirmed" %}selected{% endif %}
+                                    >
+                                        Confirmed
+                                    </option>
+
+                                    <option
+                                        value="preparing"
+                                        {% if item.status == "preparing" %}selected{% endif %}
+                                    >
+                                        Preparing
+                                    </option>
+
+                                    <option
+                                        value="shipped"
+                                        {% if item.status == "shipped" %}selected{% endif %}
+                                    >
+                                        Shipped
+                                    </option>
+
+                                    <option
+                                        value="delivered"
+                                        {% if item.status == "delivered" %}selected{% endif %}
+                                    >
+                                        Delivered
+                                    </option>
+
+                                </select>
+
+
+                                <button
+                                    type="submit"
+                                    class="update-button"
+                                >
+                                    Update
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </table>
+
+            </div>
+
+
+            <div class="payment-info">
+
+                <strong>Payment Method:</strong>
+
+                {% if order.payment_method %}
+
+                    {{ order.payment_method }}
+
+                {% else %}
+
+                    Not Selected
+
+                {% endif %}
+
+                &nbsp;&nbsp; | &nbsp;&nbsp;
+
+                <strong>Payment Status:</strong>
+
+                {% if order.payment_status == "paid" %}
+
+                    <span class="payment-paid">
+                        ✅ Paid
+                    </span>
+
+                {% else %}
+
+                    <span class="payment-pending">
+                        ⏳ {{ order.payment_status|default:"Pending"|title }}
+                    </span>
+
+                {% endif %}
+
+
+                {% if order.payment_status != "paid" %}
+
+                    <div class="payment-action">
+
+                        <form
+                            method="POST"
+                            action="{% url 'mark_payment_paid' order.id %}?tab_token={{ tab_token }}"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="paid-button"
+                            >
+                                ✅ Mark as Paid
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+        </div>
+
+        {% endfor %}
+
+
+    {% else %}
+
+        <div class="empty">
+
+            <h3>
+                No Orders Found
+            </h3>
+
+            <p>
+                No customers have ordered your products yet.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+</div>
+
+{% endblock %}

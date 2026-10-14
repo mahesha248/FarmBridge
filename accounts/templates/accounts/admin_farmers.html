@@ -1,0 +1,286 @@
+{% extends "accounts/base_admin.html" %}
+
+{% block title %}
+Manage Farmers | FarmBridge
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .page-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .welcome-section {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 30px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.10);
+    }
+
+    .welcome-section::after {
+        content: "👨‍🌾";
+        position: absolute;
+        right: 35px;
+        bottom: -20px;
+        font-size: 95px;
+        opacity: 0.12;
+    }
+
+    .welcome-section h2 {
+        margin: 0 0 8px;
+        font-size: 28px;
+    }
+
+    .welcome-section p {
+        margin: 0;
+        opacity: 0.92;
+        line-height: 1.5;
+    }
+
+    .table-card {
+        position: relative;
+        overflow: hidden;
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .table-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2e7d32;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 700px;
+    }
+
+    th {
+        background: #f3f7f1;
+        color: #1b5e20;
+        padding: 14px;
+        text-align: center;
+        font-size: 14px;
+        border-bottom: 2px solid #2e7d32;
+    }
+
+    td {
+        padding: 14px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+        color: #444;
+        font-size: 14px;
+    }
+
+    tbody tr {
+        transition: 0.2s;
+    }
+
+    tbody tr:hover {
+        background-color: #f8fbf7;
+    }
+
+    .username {
+        font-weight: 700;
+        color: #2e7d32;
+    }
+
+    .email {
+        color: #555;
+    }
+
+    .date {
+        color: #777;
+    }
+
+    .count {
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+        text-align: right;
+        color: #555;
+        font-weight: 600;
+    }
+
+    .count span {
+        color: #2e7d32;
+    }
+
+    .empty {
+        text-align: center;
+        padding: 45px 20px;
+        color: #666;
+    }
+
+    .empty-icon {
+        font-size: 45px;
+        margin-bottom: 10px;
+    }
+
+    .empty h3 {
+        color: #2e7d32;
+        margin-bottom: 8px;
+    }
+
+    .empty p {
+        margin: 0;
+    }
+
+    @media (max-width: 700px) {
+
+        .welcome-section {
+            padding: 25px 20px;
+        }
+
+        .welcome-section h2 {
+            font-size: 24px;
+        }
+
+        .table-card {
+            padding: 20px 15px;
+        }
+
+    }
+
+</style>
+
+<div class="page-container">
+
+    <div class="welcome-section">
+
+        <h2>
+            Manage Farmers 👨‍🌾
+        </h2>
+
+        <p>
+            View all registered farmers on the FarmBridge platform.
+        </p>
+
+    </div>
+
+
+    <div class="table-card">
+
+        {% if farmers %}
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Username
+                        </th>
+
+                        <th>
+                            First Name
+                        </th>
+
+                        <th>
+                            Last Name
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Date Joined
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for farmer in farmers %}
+
+                    <tr>
+
+                        <td class="username">
+                            {{ farmer.username }}
+                        </td>
+
+                        <td>
+                            {{ farmer.first_name|default:"-" }}
+                        </td>
+
+                        <td>
+                            {{ farmer.last_name|default:"-" }}
+                        </td>
+
+                        <td class="email">
+                            {{ farmer.email|default:"-" }}
+                        </td>
+
+                        <td class="date">
+                            {{ farmer.date_joined|date:"d M Y" }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="count">
+
+            Total Farmers:
+            <span>{{ farmers|length }}</span>
+
+        </div>
+
+
+        {% else %}
+
+        <div class="empty">
+
+            <div class="empty-icon">
+                👨‍🌾
+            </div>
+
+            <h3>
+                No Farmers Found
+            </h3>
+
+            <p>
+                No farmers have registered on FarmBridge yet.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

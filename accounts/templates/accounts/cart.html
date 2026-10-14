@@ -1,0 +1,595 @@
+{% extends "accounts/base_customer.html" %}
+{% load static %}
+
+{% block title %}
+My Cart | FarmBridge
+{% endblock %}
+
+{% block nav_cart %}
+active
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .cart-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .welcome-section {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 28px 32px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 18px rgba(0,0,0,0.12);
+    }
+
+    .welcome-section h1 {
+        margin: 0 0 6px;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .welcome-section p {
+        margin: 0;
+        font-size: 15px;
+        opacity: 0.92;
+    }
+
+    .cart-card {
+        position: relative;
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        overflow: hidden;
+        transition: 0.25s ease;
+    }
+
+    .cart-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2e7d32;
+    }
+
+    .cart-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    .product-image {
+        width: 115px;
+        height: 115px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        flex-shrink: 0;
+    }
+
+    .product-info {
+        flex: 1;
+    }
+
+    .product-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .product-category {
+        display: inline-block;
+        background: #e8f5e9;
+        color: #1b5e20;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    .product-price {
+        color: #2e7d32;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .quantity-section {
+        text-align: center;
+        min-width: 155px;
+    }
+
+    .quantity-label {
+        font-size: 13px;
+        color: #777;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .quantity-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 7px;
+        border: none;
+        background: #e8f5e9;
+        color: #1b5e20;
+        font-size: 19px;
+        font-weight: bold;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .quantity-btn:hover {
+        background: #c8e6c9;
+        transform: scale(1.05);
+    }
+
+    .quantity-value {
+        min-width: 42px;
+        font-weight: 700;
+        color: #333;
+        font-size: 16px;
+    }
+
+    .remove-btn {
+        color: #c62828;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        margin-top: 9px;
+        display: inline-block;
+    }
+
+    .remove-btn:hover {
+        text-decoration: underline;
+    }
+
+    .item-total {
+        min-width: 130px;
+        text-align: right;
+    }
+
+    .item-total-label {
+        font-size: 13px;
+        color: #777;
+        margin-bottom: 5px;
+    }
+
+    .item-total-price {
+        font-size: 19px;
+        font-weight: 700;
+        color: #1b5e20;
+    }
+
+    .cart-summary {
+        position: relative;
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-top: 25px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .cart-summary::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2e7d32;
+    }
+
+    .summary-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: #555;
+    }
+
+    .summary-total {
+        border-top: 1px solid #ddd;
+        padding-top: 18px;
+        margin-top: 8px;
+        font-size: 23px;
+        font-weight: 700;
+        color: #1b5e20;
+    }
+
+    .cart-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 22px;
+        gap: 15px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 11px 22px;
+        border-radius: 7px;
+        text-decoration: none;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-products {
+        background: #eeeeee;
+        color: #333;
+    }
+
+    .btn-products:hover {
+        background: #e0e0e0;
+        transform: translateY(-1px);
+    }
+
+    .btn-checkout {
+        background: #2e7d32;
+        color: white;
+    }
+
+    .btn-checkout:hover {
+        background: #1b5e20;
+        transform: translateY(-1px);
+    }
+
+    .empty-cart {
+        position: relative;
+        background: white;
+        border-radius: 14px;
+        padding: 60px 25px;
+        text-align: center;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .empty-cart::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #2e7d32;
+    }
+
+    .empty-icon {
+        font-size: 52px;
+        margin-bottom: 10px;
+    }
+
+    .empty-cart h2 {
+        color: #444;
+        margin-bottom: 10px;
+        font-size: 24px;
+    }
+
+    .empty-cart p {
+        color: #777;
+        margin-bottom: 22px;
+    }
+
+    @media (max-width: 850px) {
+
+        .cart-card {
+            flex-wrap: wrap;
+        }
+
+        .product-info {
+            min-width: calc(100% - 145px);
+        }
+
+        .quantity-section,
+        .item-total {
+            min-width: 45%;
+        }
+
+        .item-total {
+            text-align: right;
+        }
+
+    }
+
+    @media (max-width: 550px) {
+
+        .welcome-section {
+            padding: 22px;
+        }
+
+        .welcome-section h1 {
+            font-size: 24px;
+        }
+
+        .cart-card {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 18px;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 190px;
+        }
+
+        .product-info {
+            min-width: 100%;
+        }
+
+        .quantity-section,
+        .item-total {
+            min-width: 100%;
+            text-align: left;
+        }
+
+        .quantity-controls {
+            justify-content: flex-start;
+        }
+
+        .item-total {
+            margin-top: 5px;
+        }
+
+        .cart-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .cart-actions .btn {
+            text-align: center;
+        }
+
+    }
+
+</style>
+
+<div class="cart-container">
+
+    <div class="welcome-section">
+
+        <h1>
+            🛒 My Cart
+        </h1>
+
+        <p>
+            Review your selected farm products before placing your order.
+        </p>
+
+    </div>
+
+    {% if cart_items %}
+
+        {% for item in cart_items %}
+
+            <div class="cart-card">
+
+                {% if item.product.image %}
+
+                    <img
+                        src="{% static item.product.image %}"
+                        alt="{{ item.product.name }}"
+                        class="product-image"
+                    >
+
+                {% endif %}
+
+                <div class="product-info">
+
+                    <div class="product-name">
+                        {{ item.product.name }}
+                    </div>
+
+                    <div class="product-category">
+                        {{ item.product.category }}
+                    </div>
+
+                    <div class="product-price">
+                        ₹{{ item.product.price|floatformat:2 }} / unit
+                    </div>
+
+                </div>
+
+                <div class="quantity-section">
+
+                    <div class="quantity-label">
+                        Quantity
+                    </div>
+
+                    <div class="quantity-controls">
+
+                        <!-- DECREASE QUANTITY -->
+
+                        <form
+                            method="POST"
+                            action="{% url 'decrease_quantity' item.id %}?tab_token={{ tab_token }}"
+                            style="display: inline;"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="quantity-btn"
+                            >
+                                −
+                            </button>
+
+                        </form>
+
+                        <span class="quantity-value">
+                            {{ item.quantity }}
+                        </span>
+
+                        <!-- INCREASE QUANTITY -->
+
+                        <form
+                            method="POST"
+                            action="{% url 'increase_quantity' item.id %}?tab_token={{ tab_token }}"
+                            style="display: inline;"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="quantity-btn"
+                            >
+                                +
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                    <!-- REMOVE FROM CART -->
+
+                    <form
+                        method="POST"
+                        action="{% url 'remove_from_cart' item.id %}?tab_token={{ tab_token }}"
+                        style="margin: 0;"
+                    >
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="remove-btn"
+                            style="background: none; border: none; padding: 0; cursor: pointer;"
+                        >
+                            Remove
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <div class="item-total">
+
+                    <div class="item-total-label">
+                        Item Total
+                    </div>
+
+                    <div class="item-total-price">
+                        ₹{{ item.item_total|floatformat:2 }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+        <div class="cart-summary">
+
+            <div class="summary-title">
+                Order Summary
+            </div>
+
+            <div class="summary-row">
+
+                <span>
+                    Total Items
+                </span>
+
+                <strong>
+                    {{ total_items|floatformat:0 }} 
+                </strong>
+
+            </div>
+
+            <div class="summary-row summary-total">
+
+                <span>
+                    Cart Total
+                </span>
+
+                <span>
+                    ₹{{ total|floatformat:2 }}
+                </span>
+
+            </div>
+
+            <div class="cart-actions">
+
+                <a
+                    href="{% url 'customer_products' %}?tab_token={{ tab_token }}"
+                    class="btn btn-products"
+                >
+                    ← Continue Shopping
+                </a>
+
+                <a
+                    href="{% url 'checkout' %}?tab_token={{ tab_token }}"
+                    class="btn btn-checkout"
+                >
+                    Proceed to Checkout →
+                </a>
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-cart">
+
+            <div class="empty-icon">
+                🛒
+            </div>
+
+            <h2>
+                Your cart is empty
+            </h2>
+
+            <p>
+                Add some fresh products from the farmers to your cart.
+            </p>
+
+            <a
+                href="{% url 'customer_products' %}?tab_token={{ tab_token }}"
+                class="btn btn-checkout"
+            >
+                Browse Products
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

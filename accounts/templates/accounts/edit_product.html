@@ -1,0 +1,1614 @@
+{% extends "accounts/base_farmer.html" %}
+{% load static %}
+
+{% block title %}
+Edit Product | FarmBridge
+{% endblock %}
+
+{% block nav_products %}
+active
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .product-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 32px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 16px rgba(0,0,0,0.10);
+    }
+
+    .page-header::after {
+        content: "🌾";
+        position: absolute;
+        right: 25px;
+        bottom: -35px;
+        font-size: 135px;
+        opacity: 0.08;
+    }
+
+    .page-header h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .page-header p {
+        margin: 0;
+        opacity: 0.92;
+        font-size: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 14px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border-top: 4px solid #2e7d32;
+    }
+
+    .section-title {
+        font-size: 19px;
+        font-weight: 700;
+        color: #1b5e20;
+        margin-bottom: 20px;
+        padding-bottom: 11px;
+        border-bottom: 2px solid #e8f5e9;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 5px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 7px;
+        color: #444;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 12px 13px;
+        border: 1px solid #d5d5d5;
+        border-radius: 8px;
+        font-size: 14px;
+        box-sizing: border-box;
+        outline: none;
+        transition: 0.2s;
+        font-family: inherit;
+        background: white;
+    }
+
+    input:hover,
+    select:hover,
+    textarea:hover {
+        border-color: #a5d6a7;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46,125,50,0.10);
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 110px;
+    }
+
+    .required {
+        color: #d32f2f;
+    }
+
+    .freshness-section {
+        margin-top: 32px;
+    }
+
+    .freshness-info {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+
+    .freshness-item {
+        background: #f1f8e9;
+        border-left: 4px solid #2e7d32;
+        border-radius: 9px;
+        padding: 15px;
+    }
+
+    .freshness-label {
+        display: block;
+        color: #666;
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    .freshness-value {
+        display: block;
+        color: #2e7d32;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .freshness-status {
+        margin-top: 15px;
+        padding: 12px 15px;
+        background: #f8fbf8;
+        border-radius: 8px;
+        border: 1px solid #dceddc;
+        color: #555;
+        font-size: 13px;
+    }
+
+    .freshness-status.expired {
+        background: #ffebee;
+        border-color: #ffcdd2;
+        color: #c62828;
+    }
+
+    .image-section {
+        margin-top: 32px;
+    }
+
+    .image-help {
+        color: #666;
+        font-size: 13px;
+        margin-bottom: 18px;
+        background: #f8fbf8;
+        padding: 12px 14px;
+        border-left: 4px solid #81c784;
+        border-radius: 7px;
+    }
+
+    .current-image {
+        margin-bottom: 25px;
+        padding: 20px;
+        background: #f5f9f5;
+        border-radius: 10px;
+        border: 1px solid #dceddc;
+        border-left: 4px solid #2e7d32;
+    }
+
+    .current-image-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1b5e20;
+        margin-bottom: 13px;
+    }
+
+    .current-image img {
+        width: 160px;
+        height: 115px;
+        object-fit: cover;
+        border-radius: 9px;
+        border: 2px solid #c8e6c9;
+        display: block;
+    }
+
+    .current-image p {
+        margin: 0;
+        color: #777;
+        font-size: 13px;
+    }
+
+    .image-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+    }
+
+    .image-option {
+        position: relative;
+        display: none;
+    }
+
+    .image-option input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .image-option label {
+        cursor: pointer;
+        margin: 0;
+        border: 2px solid #eeeeee;
+        border-radius: 10px;
+        overflow: hidden;
+        background: white;
+        transition: 0.2s;
+        display: block;
+    }
+
+    .image-option label:hover {
+        border-color: #81c784;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 12px rgba(0,0,0,0.08);
+    }
+
+    .image-option input:checked + label {
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46,125,50,0.15);
+    }
+
+    .image-option img {
+        width: 100%;
+        height: 125px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .image-name {
+        padding: 10px 6px;
+        text-align: center;
+        font-size: 12px;
+        color: #555;
+        font-weight: 600;
+        background: #fafafa;
+    }
+
+    .select-category-message {
+        background: #f5f9f5;
+        border: 1px dashed #a5d6a7;
+        color: #666;
+        padding: 24px;
+        border-radius: 9px;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    .error-message {
+        background: #ffebee;
+        color: #c62828;
+        padding: 13px 16px;
+        border-radius: 7px;
+        margin-bottom: 20px;
+        border-left: 4px solid #c62828;
+    }
+
+    .button-section {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eeeeee;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-cancel {
+        background: #eeeeee;
+        color: #333;
+    }
+
+    .btn-cancel:hover {
+        background: #e0e0e0;
+        transform: translateY(-1px);
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+    }
+
+    .btn-save:hover {
+        background: #1b5e20;
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 900px) {
+
+        .image-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+    }
+
+    @media (max-width: 700px) {
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .full-width {
+            grid-column: auto;
+        }
+
+        .freshness-info {
+            grid-template-columns: 1fr;
+        }
+
+        .image-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .form-card {
+            padding: 20px;
+        }
+
+        .page-header {
+            padding: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 26px;
+        }
+
+    }
+
+    @media (max-width: 500px) {
+
+        .image-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .button-section {
+            flex-direction: column;
+        }
+
+        .button-section .btn {
+            text-align: center;
+        }
+
+        .current-image img {
+            width: 140px;
+            height: 105px;
+        }
+
+        .page-header::after {
+            display: none;
+        }
+
+    }
+
+</style>
+
+
+<div class="product-container">
+
+    <div class="page-header">
+
+        <h1>
+            Edit Product ✏️
+        </h1>
+
+        <p>
+            Update your product information, freshness details and image.
+        </p>
+
+    </div>
+
+
+    <div class="form-card">
+
+        {% if error %}
+
+            <div class="error-message">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="tab_token"
+                value="{{ request.GET.tab_token }}"
+            >
+
+
+            <div class="section-title">
+                Product Information
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="name">
+                        Product Name <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value="{{ product.name }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="category">
+                        Category <span class="required">*</span>
+                    </label>
+
+                    <select
+                        id="category"
+                        name="category"
+                        required
+                        onchange="showImages()"
+                    >
+
+                        <option value="">
+                            Select Category
+                        </option>
+
+                        <option value="Vegetables"
+                            {% if product.category == "Vegetables" %}selected{% endif %}>
+                            Vegetables
+                        </option>
+
+                        <option value="Fruits"
+                            {% if product.category == "Fruits" %}selected{% endif %}>
+                            Fruits
+                        </option>
+
+                        <option value="Grains"
+                            {% if product.category == "Grains" %}selected{% endif %}>
+                            Grains
+                        </option>
+
+                        <option value="Pulses"
+                            {% if product.category == "Pulses" %}selected{% endif %}>
+                            Pulses
+                        </option>
+
+                        <option value="Spices"
+                            {% if product.category == "Spices" %}selected{% endif %}>
+                            Spices
+                        </option>
+
+                        <option value="Dairy"
+                            {% if product.category == "Dairy" %}selected{% endif %}>
+                            Dairy
+                        </option>
+
+                        <option value="Eggs"
+                            {% if product.category == "Eggs" %}selected{% endif %}>
+                            Eggs
+                        </option>
+
+                        <option value="Other"
+                            {% if product.category == "Other" %}selected{% endif %}>
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="price">
+                        Price (₹) <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="number"
+                        id="price"
+                        name="price"
+                        value="{{ product.price }}"
+                        step="0.01"
+                        min="0.01"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="quantity">
+                        Available Quantity <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="number"
+                        id="quantity"
+                        name="quantity"
+                        value="{{ product.quantity }}"
+                        step="0.01"
+                        min="0.01"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                    >{{ product.description }}</textarea>
+
+                </div>
+
+            </div>
+
+
+            <div class="freshness-section">
+
+                <div class="section-title">
+                    Product Freshness 🌿
+                </div>
+
+                <div class="freshness-info">
+
+                    <div class="freshness-item">
+
+                        <span class="freshness-label">
+                            Added On
+                        </span>
+
+                        <span class="freshness-value">
+                            {{ product.added_at|date:"d M Y, h:i A" }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="freshness-item">
+
+                        <span class="freshness-label">
+                            Freshness Duration
+                        </span>
+
+                        <span class="freshness-value">
+                            {{ product.freshness_days }} Day{{ product.freshness_days|pluralize }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="freshness-item">
+
+                        <span class="freshness-label">
+                            Fresh Until
+                        </span>
+
+                        <span class="freshness-value">
+                            {% if product.expiry_date %}
+                                {{ product.expiry_date|date:"d M Y, h:i A" }}
+                            {% else %}
+                                Not set
+                            {% endif %}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                {% if product.is_expired %}
+
+                    <div class="freshness-status expired">
+                        ⚠️ This product is marked as <strong>Expired</strong>.
+                    </div>
+
+                {% else %}
+
+                    <div class="freshness-status">
+                        🌱 This product is currently active and visible to customers until the expiry date.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="image-section">
+
+                <div class="section-title">
+                    Select Product Image
+                </div>
+
+                <div class="image-help">
+                    Select a category to view its available images.
+                </div>
+
+
+                <div class="current-image">
+
+                    <div class="current-image-title">
+                        Current Product Image
+                    </div>
+
+                    {% if product.image %}
+
+                        <img
+                            src="{% static product.image %}"
+                            alt="{{ product.name }}"
+                        >
+
+                    {% else %}
+
+                        <p>
+                            No image selected.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div
+                    id="selectCategoryMessage"
+                    class="select-category-message"
+                >
+                    Select a category to choose a new product image.
+                </div>
+
+
+                <div id="imageGrid" class="image-grid">
+
+                    <!-- VEGETABLES -->
+
+                    <div class="image-option" data-category="Vegetables">
+
+                        <input
+                            type="radio"
+                            id="vegetables_tomato"
+                            name="image"
+                            value="products/vegetables/tomato.jpg"
+                            {% if product.image == "products/vegetables/tomato.jpg" %}checked{% endif %}
+                        >
+
+                        <label for="vegetables_tomato">
+                            <img src="{% static 'products/vegetables/tomato.jpg' %}">
+                            <div class="image-name">Tomato</div>
+                        </label>
+
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" id="vegetables_potato" name="image"
+                            value="products/vegetables/potato.jpg"
+                            {% if product.image == "products/vegetables/potato.jpg" %}checked{% endif %}>
+                        <label for="vegetables_potato">
+                            <img src="{% static 'products/vegetables/potato.jpg' %}">
+                            <div class="image-name">Potato</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" id="vegetables_onion" name="image"
+                            value="products/vegetables/onion.jpg"
+                            {% if product.image == "products/vegetables/onion.jpg" %}checked{% endif %}>
+                        <label for="vegetables_onion">
+                            <img src="{% static 'products/vegetables/onion.jpg' %}">
+                            <div class="image-name">Onion</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" id="vegetables_carrot" name="image"
+                            value="products/vegetables/carrot.jpg"
+                            {% if product.image == "products/vegetables/carrot.jpg" %}checked{% endif %}>
+                        <label for="vegetables_carrot">
+                            <img src="{% static 'products/vegetables/carrot.jpg' %}">
+                            <div class="image-name">Carrot</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" id="vegetables_brinjal" name="image"
+                            value="products/vegetables/brinjal.jpg"
+                            {% if product.image == "products/vegetables/brinjal.jpg" %}checked{% endif %}>
+                        <label for="vegetables_brinjal">
+                            <img src="{% static 'products/vegetables/brinjal.jpg' %}">
+                            <div class="image-name">Brinjal</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" id="vegetables_cabbage" name="image"
+                            value="products/vegetables/cabbage.jpg"
+                            {% if product.image == "products/vegetables/cabbage.jpg" %}checked{% endif %}>
+                        <label for="vegetables_cabbage">
+                            <img src="{% static 'products/vegetables/cabbage.jpg' %}">
+                            <div class="image-name">Cabbage</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" id="vegetables_cauliflower" name="image"
+                            value="products/vegetables/cauliflower.jpg"
+                            {% if product.image == "products/vegetables/cauliflower.jpg" %}checked{% endif %}>
+                        <label for="vegetables_cauliflower">
+                            <img src="{% static 'products/vegetables/cauliflower.jpg' %}">
+                            <div class="image-name">Cauliflower</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" id="vegetables_beans" name="image"
+                            value="products/vegetables/beans.jpg"
+                            {% if product.image == "products/vegetables/beans.jpg" %}checked{% endif %}>
+                        <label for="vegetables_beans">
+                            <img src="{% static 'products/vegetables/beans.jpg' %}">
+                            <div class="image-name">Beans</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" id="vegetables_spinach" name="image"
+                            value="products/vegetables/spinach.jpg"
+                            {% if product.image == "products/vegetables/spinach.jpg" %}checked{% endif %}>
+                        <label for="vegetables_spinach">
+                            <img src="{% static 'products/vegetables/spinach.jpg' %}">
+                            <div class="image-name">Spinach</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Vegetables">
+                        <input type="radio" id="vegetables_green_chilli" name="image"
+                            value="products/vegetables/green_chilli.jpg"
+                            {% if product.image == "products/vegetables/green_chilli.jpg" %}checked{% endif %}>
+                        <label for="vegetables_green_chilli">
+                            <img src="{% static 'products/vegetables/green_chilli.jpg' %}">
+                            <div class="image-name">Green Chilli</div>
+                        </label>
+                    </div>
+
+
+                    <!-- FRUITS -->
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" id="fruits_apple" name="image"
+                            value="products/fruits/apple.jpg"
+                            {% if product.image == "products/fruits/apple.jpg" %}checked{% endif %}>
+                        <label for="fruits_apple">
+                            <img src="{% static 'products/fruits/apple.jpg' %}">
+                            <div class="image-name">Apple</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" id="fruits_banana" name="image"
+                            value="products/fruits/banana.jpg"
+                            {% if product.image == "products/fruits/banana.jpg" %}checked{% endif %}>
+                        <label for="fruits_banana">
+                            <img src="{% static 'products/fruits/banana.jpg' %}">
+                            <div class="image-name">Banana</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" id="fruits_mango" name="image"
+                            value="products/fruits/mango.jpg"
+                            {% if product.image == "products/fruits/mango.jpg" %}checked{% endif %}>
+                        <label for="fruits_mango">
+                            <img src="{% static 'products/fruits/mango.jpg' %}">
+                            <div class="image-name">Mango</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" id="fruits_orange" name="image"
+                            value="products/fruits/orange.jpg"
+                            {% if product.image == "products/fruits/orange.jpg" %}checked{% endif %}>
+                        <label for="fruits_orange">
+                            <img src="{% static 'products/fruits/orange.jpg' %}">
+                            <div class="image-name">Orange</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" id="fruits_grapes" name="image"
+                            value="products/fruits/grapes.jpg"
+                            {% if product.image == "products/fruits/grapes.jpg" %}checked{% endif %}>
+                        <label for="fruits_grapes">
+                            <img src="{% static 'products/fruits/grapes.jpg' %}">
+                            <div class="image-name">Grapes</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" id="fruits_papaya" name="image"
+                            value="products/fruits/papaya.jpg"
+                            {% if product.image == "products/fruits/papaya.jpg" %}checked{% endif %}>
+                        <label for="fruits_papaya">
+                            <img src="{% static 'products/fruits/papaya.jpg' %}">
+                            <div class="image-name">Papaya</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" id="fruits_guava" name="image"
+                            value="products/fruits/guava.jpg"
+                            {% if product.image == "products/fruits/guava.jpg" %}checked{% endif %}>
+                        <label for="fruits_guava">
+                            <img src="{% static 'products/fruits/guava.jpg' %}">
+                            <div class="image-name">Guava</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" id="fruits_pomegranate" name="image"
+                            value="products/fruits/pomegranate.jpg"
+                            {% if product.image == "products/fruits/pomegranate.jpg" %}checked{% endif %}>
+                        <label for="fruits_pomegranate">
+                            <img src="{% static 'products/fruits/pomegranate.jpg' %}">
+                            <div class="image-name">Pomegranate</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" id="fruits_watermelon" name="image"
+                            value="products/fruits/watermelon.jpg"
+                            {% if product.image == "products/fruits/watermelon.jpg" %}checked{% endif %}>
+                        <label for="fruits_watermelon">
+                            <img src="{% static 'products/fruits/watermelon.jpg' %}">
+                            <div class="image-name">Watermelon</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Fruits">
+                        <input type="radio" id="fruits_pineapple" name="image"
+                            value="products/fruits/pineapple.jpg"
+                            {% if product.image == "products/fruits/pineapple.jpg" %}checked{% endif %}>
+                        <label for="fruits_pineapple">
+                            <img src="{% static 'products/fruits/pineapple.jpg' %}">
+                            <div class="image-name">Pineapple</div>
+                        </label>
+                    </div>
+
+
+                    <!-- GRAINS -->
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" id="grains_rice" name="image"
+                            value="products/grains/rice.jpg"
+                            {% if product.image == "products/grains/rice.jpg" %}checked{% endif %}>
+                        <label for="grains_rice">
+                            <img src="{% static 'products/grains/rice.jpg' %}">
+                            <div class="image-name">Rice</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" id="grains_wheat" name="image"
+                            value="products/grains/wheat.jpg"
+                            {% if product.image == "products/grains/wheat.jpg" %}checked{% endif %}>
+                        <label for="grains_wheat">
+                            <img src="{% static 'products/grains/wheat.jpg' %}">
+                            <div class="image-name">Wheat</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" id="grains_maize" name="image"
+                            value="products/grains/maize.jpg"
+                            {% if product.image == "products/grains/maize.jpg" %}checked{% endif %}>
+                        <label for="grains_maize">
+                            <img src="{% static 'products/grains/maize.jpg' %}">
+                            <div class="image-name">Maize</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" id="grains_barley" name="image"
+                            value="products/grains/barley.jpg"
+                            {% if product.image == "products/grains/barley.jpg" %}checked{% endif %}>
+                        <label for="grains_barley">
+                            <img src="{% static 'products/grains/barley.jpg' %}">
+                            <div class="image-name">Barley</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" id="grains_oats" name="image"
+                            value="products/grains/oats.jpg"
+                            {% if product.image == "products/grains/oats.jpg" %}checked{% endif %}>
+                        <label for="grains_oats">
+                            <img src="{% static 'products/grains/oats.jpg' %}">
+                            <div class="image-name">Oats</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" id="grains_ragi" name="image"
+                            value="products/grains/ragi.jpg"
+                            {% if product.image == "products/grains/ragi.jpg" %}checked{% endif %}>
+                        <label for="grains_ragi">
+                            <img src="{% static 'products/grains/ragi.jpg' %}">
+                            <div class="image-name">Ragi</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" id="grains_jowar" name="image"
+                            value="products/grains/jowar.jpg"
+                            {% if product.image == "products/grains/jowar.jpg" %}checked{% endif %}>
+                        <label for="grains_jowar">
+                            <img src="{% static 'products/grains/jowar.jpg' %}">
+                            <div class="image-name">Jowar</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" id="grains_bajra" name="image"
+                            value="products/grains/bajra.jpg"
+                            {% if product.image == "products/grains/bajra.jpg" %}checked{% endif %}>
+                        <label for="grains_bajra">
+                            <img src="{% static 'products/grains/bajra.jpg' %}">
+                            <div class="image-name">Bajra</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" id="grains_brown_rice" name="image"
+                            value="products/grains/brown_rice.jpg"
+                            {% if product.image == "products/grains/brown_rice.jpg" %}checked{% endif %}>
+                        <label for="grains_brown_rice">
+                            <img src="{% static 'products/grains/brown_rice.jpg' %}">
+                            <div class="image-name">Brown Rice</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Grains">
+                        <input type="radio" id="grains_corn" name="image"
+                            value="products/grains/corn.jpg"
+                            {% if product.image == "products/grains/corn.jpg" %}checked{% endif %}>
+                        <label for="grains_corn">
+                            <img src="{% static 'products/grains/corn.jpg' %}">
+                            <div class="image-name">Corn</div>
+                        </label>
+                    </div>
+
+
+                    <!-- PULSES -->
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" id="pulses_toor" name="image"
+                            value="products/pulses/toor_dal.jpg"
+                            {% if product.image == "products/pulses/toor_dal.jpg" %}checked{% endif %}>
+                        <label for="pulses_toor">
+                            <img src="{% static 'products/pulses/toor_dal.jpg' %}">
+                            <div class="image-name">Toor Dal</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" id="pulses_moong" name="image"
+                            value="products/pulses/moong_dal.jpg"
+                            {% if product.image == "products/pulses/moong_dal.jpg" %}checked{% endif %}>
+                        <label for="pulses_moong">
+                            <img src="{% static 'products/pulses/moong_dal.jpg' %}">
+                            <div class="image-name">Moong Dal</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" id="pulses_urad" name="image"
+                            value="products/pulses/urad_dal.jpg"
+                            {% if product.image == "products/pulses/urad_dal.jpg" %}checked{% endif %}>
+                        <label for="pulses_urad">
+                            <img src="{% static 'products/pulses/urad_dal.jpg' %}">
+                            <div class="image-name">Urad Dal</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" id="pulses_chana" name="image"
+                            value="products/pulses/chana_dal.jpg"
+                            {% if product.image == "products/pulses/chana_dal.jpg" %}checked{% endif %}>
+                        <label for="pulses_chana">
+                            <img src="{% static 'products/pulses/chana_dal.jpg' %}">
+                            <div class="image-name">Chana Dal</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" id="pulses_masoor" name="image"
+                            value="products/pulses/masoor_dal.jpg"
+                            {% if product.image == "products/pulses/masoor_dal.jpg" %}checked{% endif %}>
+                        <label for="pulses_masoor">
+                            <img src="{% static 'products/pulses/masoor_dal.jpg' %}">
+                            <div class="image-name">Masoor Dal</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" id="pulses_chickpeas" name="image"
+                            value="products/pulses/chickpeas.jpg"
+                            {% if product.image == "products/pulses/chickpeas.jpg" %}checked{% endif %}>
+                        <label for="pulses_chickpeas">
+                            <img src="{% static 'products/pulses/chickpeas.jpg' %}">
+                            <div class="image-name">Chickpeas</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" id="pulses_green_gram" name="image"
+                            value="products/pulses/green_gram.jpg"
+                            {% if product.image == "products/pulses/green_gram.jpg" %}checked{% endif %}>
+                        <label for="pulses_green_gram">
+                            <img src="{% static 'products/pulses/green_gram.jpg' %}">
+                            <div class="image-name">Green Gram</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" id="pulses_black_gram" name="image"
+                            value="products/pulses/black_gram.jpg"
+                            {% if product.image == "products/pulses/black_gram.jpg" %}checked{% endif %}>
+                        <label for="pulses_black_gram">
+                            <img src="{% static 'products/pulses/black_gram.jpg' %}">
+                            <div class="image-name">Black Gram</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" id="pulses_kidney" name="image"
+                            value="products/pulses/kidney_beans.jpg"
+                            {% if product.image == "products/pulses/kidney_beans.jpg" %}checked{% endif %}>
+                        <label for="pulses_kidney">
+                            <img src="{% static 'products/pulses/kidney_beans.jpg' %}">
+                            <div class="image-name">Kidney Beans</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Pulses">
+                        <input type="radio" id="pulses_black_eyed" name="image"
+                            value="products/pulses/black_eyed_peas.jpg"
+                            {% if product.image == "products/pulses/black_eyed_peas.jpg" %}checked{% endif %}>
+                        <label for="pulses_black_eyed">
+                            <img src="{% static 'products/pulses/black_eyed_peas.jpg' %}">
+                            <div class="image-name">Black Eyed Peas</div>
+                        </label>
+                    </div>
+
+
+                    <!-- SPICES -->
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" id="spices_chilli" name="image"
+                            value="products/spices/chilli.jpg"
+                            {% if product.image == "products/spices/chilli.jpg" %}checked{% endif %}>
+                        <label for="spices_chilli">
+                            <img src="{% static 'products/spices/chilli.jpg' %}">
+                            <div class="image-name">Chilli</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" id="spices_turmeric" name="image"
+                            value="products/spices/turmeric.jpg"
+                            {% if product.image == "products/spices/turmeric.jpg" %}checked{% endif %}>
+                        <label for="spices_turmeric">
+                            <img src="{% static 'products/spices/turmeric.jpg' %}">
+                            <div class="image-name">Turmeric</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" id="spices_ginger" name="image"
+                            value="products/spices/ginger.jpg"
+                            {% if product.image == "products/spices/ginger.jpg" %}checked{% endif %}>
+                        <label for="spices_ginger">
+                            <img src="{% static 'products/spices/ginger.jpg' %}">
+                            <div class="image-name">Ginger</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" id="spices_garlic" name="image"
+                            value="products/spices/garlic.jpg"
+                            {% if product.image == "products/spices/garlic.jpg" %}checked{% endif %}>
+                        <label for="spices_garlic">
+                            <img src="{% static 'products/spices/garlic.jpg' %}">
+                            <div class="image-name">Garlic</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" id="spices_pepper" name="image"
+                            value="products/spices/black_pepper.jpg"
+                            {% if product.image == "products/spices/black_pepper.jpg" %}checked{% endif %}>
+                        <label for="spices_pepper">
+                            <img src="{% static 'products/spices/black_pepper.jpg' %}">
+                            <div class="image-name">Black Pepper</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" id="spices_cardamom" name="image"
+                            value="products/spices/cardamom.jpg"
+                            {% if product.image == "products/spices/cardamom.jpg" %}checked{% endif %}>
+                        <label for="spices_cardamom">
+                            <img src="{% static 'products/spices/cardamom.jpg' %}">
+                            <div class="image-name">Cardamom</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" id="spices_cloves" name="image"
+                            value="products/spices/cloves.jpg"
+                            {% if product.image == "products/spices/cloves.jpg" %}checked{% endif %}>
+                        <label for="spices_cloves">
+                            <img src="{% static 'products/spices/cloves.jpg' %}">
+                            <div class="image-name">Cloves</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" id="spices_cinnamon" name="image"
+                            value="products/spices/cinnamon.jpg"
+                            {% if product.image == "products/spices/cinnamon.jpg" %}checked{% endif %}>
+                        <label for="spices_cinnamon">
+                            <img src="{% static 'products/spices/cinnamon.jpg' %}">
+                            <div class="image-name">Cinnamon</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" id="spices_cumin" name="image"
+                            value="products/spices/cumin.jpg"
+                            {% if product.image == "products/spices/cumin.jpg" %}checked{% endif %}>
+                        <label for="spices_cumin">
+                            <img src="{% static 'products/spices/cumin.jpg' %}">
+                            <div class="image-name">Cumin</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Spices">
+                        <input type="radio" id="spices_coriander" name="image"
+                            value="products/spices/coriander.jpg"
+                            {% if product.image == "products/spices/coriander.jpg" %}checked{% endif %}>
+                        <label for="spices_coriander">
+                            <img src="{% static 'products/spices/coriander.jpg' %}">
+                            <div class="image-name">Coriander</div>
+                        </label>
+                    </div>
+
+
+                    <!-- DAIRY -->
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" id="dairy_milk" name="image"
+                            value="products/dairy/milk.jpg"
+                            {% if product.image == "products/dairy/milk.jpg" %}checked{% endif %}>
+                        <label for="dairy_milk">
+                            <img src="{% static 'products/dairy/milk.jpg' %}">
+                            <div class="image-name">Milk</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" id="dairy_curd" name="image"
+                            value="products/dairy/curd.jpg"
+                            {% if product.image == "products/dairy/curd.jpg" %}checked{% endif %}>
+                        <label for="dairy_curd">
+                            <img src="{% static 'products/dairy/curd.jpg' %}">
+                            <div class="image-name">Curd</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" id="dairy_butter" name="image"
+                            value="products/dairy/butter.jpg"
+                            {% if product.image == "products/dairy/butter.jpg" %}checked{% endif %}>
+                        <label for="dairy_butter">
+                            <img src="{% static 'products/dairy/butter.jpg' %}">
+                            <div class="image-name">Butter</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" id="dairy_ghee" name="image"
+                            value="products/dairy/ghee.jpg"
+                            {% if product.image == "products/dairy/ghee.jpg" %}checked{% endif %}>
+                        <label for="dairy_ghee">
+                            <img src="{% static 'products/dairy/ghee.jpg' %}">
+                            <div class="image-name">Ghee</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" id="dairy_paneer" name="image"
+                            value="products/dairy/paneer.jpg"
+                            {% if product.image == "products/dairy/paneer.jpg" %}checked{% endif %}>
+                        <label for="dairy_paneer">
+                            <img src="{% static 'products/dairy/paneer.jpg' %}">
+                            <div class="image-name">Paneer</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" id="dairy_cheese" name="image"
+                            value="products/dairy/cheese.jpg"
+                            {% if product.image == "products/dairy/cheese.jpg" %}checked{% endif %}>
+                        <label for="dairy_cheese">
+                            <img src="{% static 'products/dairy/cheese.jpg' %}">
+                            <div class="image-name">Cheese</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" id="dairy_buttermilk" name="image"
+                            value="products/dairy/buttermilk.jpg"
+                            {% if product.image == "products/dairy/buttermilk.jpg" %}checked{% endif %}>
+                        <label for="dairy_buttermilk">
+                            <img src="{% static 'products/dairy/buttermilk.jpg' %}">
+                            <div class="image-name">Buttermilk</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" id="dairy_cream" name="image"
+                            value="products/dairy/cream.jpg"
+                            {% if product.image == "products/dairy/cream.jpg" %}checked{% endif %}>
+                        <label for="dairy_cream">
+                            <img src="{% static 'products/dairy/cream.jpg' %}">
+                            <div class="image-name">Cream</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" id="dairy_khoya" name="image"
+                            value="products/dairy/khoya.jpg"
+                            {% if product.image == "products/dairy/khoya.jpg" %}checked{% endif %}>
+                        <label for="dairy_khoya">
+                            <img src="{% static 'products/dairy/khoya.jpg' %}">
+                            <div class="image-name">Khoya</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Dairy">
+                        <input type="radio" id="dairy_lassi" name="image"
+                            value="products/dairy/lassi.jpg"
+                            {% if product.image == "products/dairy/lassi.jpg" %}checked{% endif %}>
+                        <label for="dairy_lassi">
+                            <img src="{% static 'products/dairy/lassi.jpg' %}">
+                            <div class="image-name">Lassi</div>
+                        </label>
+                    </div>
+
+
+                    <!-- EGGS -->
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" id="eggs_chicken" name="image"
+                            value="products/eggs/chicken_egg.jpg"
+                            {% if product.image == "products/eggs/chicken_egg.jpg" %}checked{% endif %}>
+                        <label for="eggs_chicken">
+                            <img src="{% static 'products/eggs/chicken_egg.jpg' %}">
+                            <div class="image-name">Chicken Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" id="eggs_country" name="image"
+                            value="products/eggs/country_egg.jpg"
+                            {% if product.image == "products/eggs/country_egg.jpg" %}checked{% endif %}>
+                        <label for="eggs_country">
+                            <img src="{% static 'products/eggs/country_egg.jpg' %}">
+                            <div class="image-name">Country Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" id="eggs_duck" name="image"
+                            value="products/eggs/duck_egg.jpg"
+                            {% if product.image == "products/eggs/duck_egg.jpg" %}checked{% endif %}>
+                        <label for="eggs_duck">
+                            <img src="{% static 'products/eggs/duck_egg.jpg' %}">
+                            <div class="image-name">Duck Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" id="eggs_quail" name="image"
+                            value="products/eggs/quail_egg.jpg"
+                            {% if product.image == "products/eggs/quail_egg.jpg" %}checked{% endif %}>
+                        <label for="eggs_quail">
+                            <img src="{% static 'products/eggs/quail_egg.jpg' %}">
+                            <div class="image-name">Quail Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" id="eggs_organic" name="image"
+                            value="products/eggs/organic_egg.jpg"
+                            {% if product.image == "products/eggs/organic_egg.jpg" %}checked{% endif %}>
+                        <label for="eggs_organic">
+                            <img src="{% static 'products/eggs/organic_egg.jpg' %}">
+                            <div class="image-name">Organic Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" id="eggs_white" name="image"
+                            value="products/eggs/white_egg.jpg"
+                            {% if product.image == "products/eggs/white_egg.jpg" %}checked{% endif %}>
+                        <label for="eggs_white">
+                            <img src="{% static 'products/eggs/white_egg.jpg' %}">
+                            <div class="image-name">White Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" id="eggs_brown" name="image"
+                            value="products/eggs/brown_egg.jpg"
+                            {% if product.image == "products/eggs/brown_egg.jpg" %}checked{% endif %}>
+                        <label for="eggs_brown">
+                            <img src="{% static 'products/eggs/brown_egg.jpg' %}">
+                            <div class="image-name">Brown Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" id="eggs_free_range" name="image"
+                            value="products/eggs/free_range_egg.jpg"
+                            {% if product.image == "products/eggs/free_range_egg.jpg" %}checked{% endif %}>
+                        <label for="eggs_free_range">
+                            <img src="{% static 'products/eggs/free_range_egg.jpg' %}">
+                            <div class="image-name">Free Range Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" id="eggs_farm" name="image"
+                            value="products/eggs/farm_egg.jpg"
+                            {% if product.image == "products/eggs/farm_egg.jpg" %}checked{% endif %}>
+                        <label for="eggs_farm">
+                            <img src="{% static 'products/eggs/farm_egg.jpg' %}">
+                            <div class="image-name">Farm Egg</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Eggs">
+                        <input type="radio" id="eggs_jumbo" name="image"
+                            value="products/eggs/jumbo_egg.jpg"
+                            {% if product.image == "products/eggs/jumbo_egg.jpg" %}checked{% endif %}>
+                        <label for="eggs_jumbo">
+                            <img src="{% static 'products/eggs/jumbo_egg.jpg' %}">
+                            <div class="image-name">Jumbo Egg</div>
+                        </label>
+                    </div>
+
+
+                    <!-- OTHER -->
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" id="other_honey" name="image"
+                            value="products/other/honey.jpg"
+                            {% if product.image == "products/other/honey.jpg" %}checked{% endif %}>
+                        <label for="other_honey">
+                            <img src="{% static 'products/other/honey.jpg' %}">
+                            <div class="image-name">Honey</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" id="other_jaggery" name="image"
+                            value="products/other/jaggery.jpg"
+                            {% if product.image == "products/other/jaggery.jpg" %}checked{% endif %}>
+                        <label for="other_jaggery">
+                            <img src="{% static 'products/other/jaggery.jpg' %}">
+                            <div class="image-name">Jaggery</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" id="other_sugarcane" name="image"
+                            value="products/other/sugarcane.jpg"
+                            {% if product.image == "products/other/sugarcane.jpg" %}checked{% endif %}>
+                        <label for="other_sugarcane">
+                            <img src="{% static 'products/other/sugarcane.jpg' %}">
+                            <div class="image-name">Sugarcane</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" id="other_coconut" name="image"
+                            value="products/other/coconut.jpg"
+                            {% if product.image == "products/other/coconut.jpg" %}checked{% endif %}>
+                        <label for="other_coconut">
+                            <img src="{% static 'products/other/coconut.jpg' %}">
+                            <div class="image-name">Coconut</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" id="other_dry_fruits" name="image"
+                            value="products/other/dry_fruits.jpg"
+                            {% if product.image == "products/other/dry_fruits.jpg" %}checked{% endif %}>
+                        <label for="other_dry_fruits">
+                            <img src="{% static 'products/other/dry_fruits.jpg' %}">
+                            <div class="image-name">Dry Fruits</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" id="other_cashew" name="image"
+                            value="products/other/cashew.jpg"
+                            {% if product.image == "products/other/cashew.jpg" %}checked{% endif %}>
+                        <label for="other_cashew">
+                            <img src="{% static 'products/other/cashew.jpg' %}">
+                            <div class="image-name">Cashew</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" id="other_almonds" name="image"
+                            value="products/other/almonds.jpg"
+                            {% if product.image == "products/other/almonds.jpg" %}checked{% endif %}>
+                        <label for="other_almonds">
+                            <img src="{% static 'products/other/almonds.jpg' %}">
+                            <div class="image-name">Almonds</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" id="other_peanuts" name="image"
+                            value="products/other/peanuts.jpg"
+                            {% if product.image == "products/other/peanuts.jpg" %}checked{% endif %}>
+                        <label for="other_peanuts">
+                            <img src="{% static 'products/other/peanuts.jpg' %}">
+                            <div class="image-name">Peanuts</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" id="other_sesame" name="image"
+                            value="products/other/sesame.jpg"
+                            {% if product.image == "products/other/sesame.jpg" %}checked{% endif %}>
+                        <label for="other_sesame">
+                            <img src="{% static 'products/other/sesame.jpg' %}">
+                            <div class="image-name">Sesame</div>
+                        </label>
+                    </div>
+
+                    <div class="image-option" data-category="Other">
+                        <input type="radio" id="other_flax" name="image"
+                            value="products/other/flax_seeds.jpg"
+                            {% if product.image == "products/other/flax_seeds.jpg" %}checked{% endif %}>
+                        <label for="other_flax">
+                            <img src="{% static 'products/other/flax_seeds.jpg' %}">
+                            <div class="image-name">Flax Seeds</div>
+                        </label>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="button-section">
+
+                <a
+                    href="{% url 'my_products' %}?tab_token={{ request.GET.tab_token }}"
+                    class="btn btn-cancel"
+                >
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn btn-save"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    function showImages() {
+
+        const category =
+            document.getElementById("category").value;
+
+        const images =
+            document.querySelectorAll(".image-option");
+
+        const message =
+            document.getElementById("selectCategoryMessage");
+
+        let found = false;
+
+        images.forEach(function(image) {
+
+            if (image.dataset.category === category) {
+
+                image.style.display = "block";
+                found = true;
+
+            } else {
+
+                image.style.display = "none";
+
+            }
+
+        });
+
+        if (category === "") {
+
+            message.style.display = "block";
+
+            message.innerHTML =
+                "Select a category to choose a new product image.";
+
+        } else if (found) {
+
+            message.style.display = "none";
+
+        } else {
+
+            message.style.display = "block";
+
+            message.innerHTML =
+                "No images available for this category.";
+
+        }
+
+    }
+
+    showImages();
+
+</script>
+
+{% endblock %}

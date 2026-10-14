@@ -1,0 +1,494 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FarmBridge | Login</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+        min-height: 100vh;
+    }
+
+    .page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+    }
+
+    .main-card {
+        width: 100%;
+        max-width: 1050px;
+        min-height: 580px;
+        background: white;
+        border-radius: 22px;
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.13);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        overflow: hidden;
+    }
+
+    .welcome-section {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 60px 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .welcome-section::before {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 50%;
+        right: -80px;
+        top: -80px;
+    }
+
+    .welcome-section::after {
+        content: "🌱";
+        position: absolute;
+        right: -15px;
+        bottom: -35px;
+        font-size: 180px;
+        opacity: 0.08;
+    }
+
+    .logo {
+        width: 70px;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 38px;
+        margin-bottom: 22px;
+    }
+
+    .welcome-section h1 {
+        font-size: 44px;
+        margin: 0 0 12px;
+        letter-spacing: 0.3px;
+    }
+
+    .welcome-section h2 {
+        font-size: 23px;
+        font-weight: normal;
+        margin: 0 0 20px;
+        color: #f1f8e9;
+    }
+
+    .welcome-section p {
+        font-size: 16px;
+        line-height: 1.8;
+        color: #e8f5e9;
+        margin: 0 0 28px;
+        max-width: 440px;
+    }
+
+    .features {
+        margin-top: 5px;
+    }
+
+    .feature {
+        margin: 13px 0;
+        font-size: 15px;
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.08);
+        padding: 10px 13px;
+        border-radius: 8px;
+        width: fit-content;
+    }
+
+    .login-section {
+        padding: 55px 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .login-section h2 {
+        color: #2e7d32;
+        font-size: 31px;
+        margin: 0 0 8px;
+    }
+
+    .login-subtitle {
+        color: #666;
+        margin: 0 0 28px;
+        font-size: 15px;
+    }
+
+    .message {
+        background-color: #ffebee;
+        color: #c62828;
+        padding: 12px 14px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 14px;
+        border: 1px solid #ffcdd2;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid #d4d4d4;
+        border-radius: 8px;
+        font-size: 15px;
+        outline: none;
+        background-color: #fafafa;
+        transition: 0.2s;
+    }
+
+    .form-group input:hover {
+        border-color: #9e9e9e;
+        background-color: white;
+    }
+
+    .form-group input:focus {
+        border-color: #2e7d32;
+        background-color: white;
+        box-shadow: 0 0 0 3px #e8f5e9;
+    }
+
+    .login-button {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 5px;
+        transition: 0.2s;
+        box-shadow: 0 5px 14px rgba(46, 125, 50, 0.22);
+    }
+
+    .login-button:hover {
+        background: linear-gradient(135deg, #388e3c, #1b5e20);
+        transform: translateY(-2px);
+        box-shadow: 0 7px 18px rgba(46, 125, 50, 0.28);
+    }
+
+    .login-button:active {
+        transform: translateY(0);
+    }
+
+    .register-section {
+        text-align: center;
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #eeeeee;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .register-section p {
+        margin: 0;
+    }
+
+    .register-link {
+        color: #2e7d32;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    .register-link:hover {
+        text-decoration: underline;
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 20px;
+        color: #999;
+        font-size: 12px;
+    }
+
+    @media (max-width: 800px) {
+
+        .page {
+            padding: 20px;
+        }
+
+        .main-card {
+            grid-template-columns: 1fr;
+            max-width: 520px;
+            min-height: auto;
+        }
+
+        .welcome-section {
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .logo {
+            margin: 0 auto 18px;
+        }
+
+        .welcome-section h1 {
+            font-size: 36px;
+        }
+
+        .welcome-section h2 {
+            font-size: 20px;
+        }
+
+        .welcome-section p {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features {
+            display: none;
+        }
+
+        .login-section {
+            padding: 40px 30px;
+        }
+
+    }
+
+    @media (max-width: 450px) {
+
+        .page {
+            padding: 12px;
+        }
+
+        .main-card {
+            border-radius: 16px;
+        }
+
+        .welcome-section {
+            padding: 32px 22px;
+        }
+
+        .login-section {
+            padding: 32px 22px;
+        }
+
+        .welcome-section h1 {
+            font-size: 32px;
+        }
+
+        .login-section h2 {
+            font-size: 27px;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="main-card">
+
+        <div class="welcome-section">
+
+            <div class="logo">
+                🌱
+            </div>
+
+            <h1>
+                FarmBridge
+            </h1>
+
+            <h2>
+                Connecting Farmers & Customers
+            </h2>
+
+            <p>
+                A simple platform that connects farmers
+                directly with customers, making it easier
+                to discover and purchase fresh agricultural
+                products.
+            </p>
+
+            <div class="features">
+
+                <div class="feature">
+                    🌾 Fresh products from farmers
+                </div>
+
+                <div class="feature">
+                    🛒 Easy and convenient shopping
+                </div>
+
+                <div class="feature">
+                    📦 Simple order management
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="login-section">
+
+            <h2>
+                Welcome Back 👋
+            </h2>
+
+            <p class="login-subtitle">
+                Login to continue to FarmBridge
+            </p>
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="message">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="tab_token"
+                    id="tab_token"
+                >
+
+                <div class="form-group">
+
+                    <label>
+                        Username
+                    </label>
+
+                    <input
+                        type="text"
+                        name="username"
+                        placeholder="Enter your username"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="login-button">
+
+                    Login
+
+                </button>
+
+            </form>
+
+            <div class="register-section">
+
+                <p>
+                    Don't have an account?
+
+                    <a
+                        href="{% url 'register' %}"
+                        class="register-link">
+
+                        Create an account
+
+                    </a>
+
+                </p>
+
+            </div>
+
+            <div class="footer">
+
+                🌱 FarmBridge — Connecting Farmers Directly With Customers
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    let tabToken = sessionStorage.getItem(
+        "farmbridge_tab_token"
+    );
+
+    if (!tabToken) {
+
+        tabToken = crypto.randomUUID();
+
+        sessionStorage.setItem(
+            "farmbridge_tab_token",
+            tabToken
+        );
+
+    }
+
+    document.getElementById(
+        "tab_token"
+    ).value = tabToken;
+
+</script>
+
+</body>
+
+</html>

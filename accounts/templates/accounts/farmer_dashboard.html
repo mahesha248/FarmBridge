@@ -1,0 +1,497 @@
+{% extends "accounts/base_farmer.html" %}
+
+{% block title %}
+Farmer Dashboard | FarmBridge
+{% endblock %}
+
+{% block nav_dashboard %}
+active
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .dashboard-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .welcome-section {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 32px;
+        border-radius: 14px;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    }
+
+    .welcome-section h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+    }
+
+    .welcome-section p {
+        margin: 0;
+        opacity: 0.92;
+        font-size: 15px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 32px;
+    }
+
+    .stat-card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 22px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        border: 1px solid #eeeeee;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background-color: #2e7d32;
+    }
+
+    .stat-icon {
+        font-size: 29px;
+        margin: 5px 0 10px;
+    }
+
+    .stat-label {
+        color: #777;
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    .stat-value {
+        font-size: 25px;
+        font-weight: 700;
+        color: #1b5e20;
+    }
+
+    .section-title {
+        font-size: 21px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 18px;
+    }
+
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 32px;
+    }
+
+    .action-card {
+        background-color: white;
+        padding: 24px;
+        border-radius: 12px;
+        text-decoration: none;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        transition: 0.2s;
+        border: 1px solid #eeeeee;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background-color: #2e7d32;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: 0.2s;
+    }
+
+    .action-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+        border-color: #2e7d32;
+    }
+
+    .action-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .action-icon {
+        font-size: 34px;
+        margin-bottom: 12px;
+    }
+
+    .action-title {
+        color: #1b5e20;
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .action-description {
+        color: #777;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .info-card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        border: 1px solid #eeeeee;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background-color: #2e7d32;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 13px 0;
+        border-bottom: 1px solid #eeeeee;
+        gap: 20px;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: #777;
+        font-size: 14px;
+    }
+
+    .info-value {
+        color: #333;
+        font-weight: 600;
+        text-align: right;
+        word-break: break-word;
+    }
+
+    @media (max-width: 900px) {
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .actions-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+    }
+
+    @media (max-width: 600px) {
+
+        .stats-grid,
+        .actions-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .welcome-section {
+            padding: 22px;
+        }
+
+        .welcome-section h1 {
+            font-size: 23px;
+        }
+
+        .stat-card,
+        .action-card,
+        .info-card {
+            padding: 20px;
+        }
+
+        .info-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .info-value {
+            text-align: left;
+        }
+
+    }
+
+</style>
+
+
+<div class="dashboard-container">
+
+
+    <div class="welcome-section">
+
+        <h1>
+            Welcome, {{ request.tab_user.first_name|default:request.tab_user.username }} 👨‍🌾
+        </h1>
+
+        <p>
+            Manage your products, orders and sales from your FarmBridge dashboard.
+        </p>
+
+    </div>
+
+
+    <div class="stats-grid">
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🌱
+            </div>
+
+            <div class="stat-label">
+                Total Products
+            </div>
+
+            <div class="stat-value">
+                {{ total_products }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                📦
+            </div>
+
+            <div class="stat-label">
+                Total Orders
+            </div>
+
+            <div class="stat-value">
+                {{ total_orders }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                💰
+            </div>
+
+            <div class="stat-label">
+                Total Sales
+            </div>
+
+            <div class="stat-value">
+                ₹{{ total_sales|floatformat:2 }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ⏳
+            </div>
+
+            <div class="stat-label">
+                Pending Orders
+            </div>
+
+            <div class="stat-value">
+                {{ pending_orders }}
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="section-title">
+        Quick Actions
+    </div>
+
+
+    <div class="actions-grid">
+
+
+        <a
+            href="{% url 'add_product' %}?tab_token={{ tab_token }}"
+            class="action-card"
+        >
+
+            <div class="action-icon">
+                ➕
+            </div>
+
+            <div class="action-title">
+                Add Product
+            </div>
+
+            <div class="action-description">
+                Add a new agricultural product for customers to purchase.
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'my_products' %}?tab_token={{ tab_token }}"
+            class="action-card"
+        >
+
+            <div class="action-icon">
+                🌾
+            </div>
+
+            <div class="action-title">
+                My Products
+            </div>
+
+            <div class="action-description">
+                View, edit and manage all the products you have added.
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'farmer_orders' %}?tab_token={{ tab_token }}"
+            class="action-card"
+        >
+
+            <div class="action-icon">
+                📋
+            </div>
+
+            <div class="action-title">
+                Manage Orders
+            </div>
+
+            <div class="action-description">
+                View customer orders and update their delivery status.
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'farmer_sales' %}?tab_token={{ tab_token }}"
+            class="action-card"
+        >
+
+            <div class="action-icon">
+                📊
+            </div>
+
+            <div class="action-title">
+                Sales Report
+            </div>
+
+            <div class="action-description">
+                Check your sales information and order revenue.
+            </div>
+
+        </a>
+
+
+        <a
+            href="{% url 'customer_products' %}?tab_token={{ tab_token }}"
+            class="action-card"
+        >
+
+            <div class="action-icon">
+                🛒
+            </div>
+
+            <div class="action-title">
+                Browse Marketplace
+            </div>
+
+            <div class="action-description">
+                View products available in the FarmBridge marketplace.
+            </div>
+
+        </a>
+
+
+    </div>
+
+
+    <div class="section-title">
+        Account Information
+    </div>
+
+
+    <div class="info-card">
+
+
+        <div class="info-row">
+
+            <span class="info-label">
+                Username
+            </span>
+
+            <span class="info-value">
+                {{ request.tab_user.username }}
+            </span>
+
+        </div>
+
+
+        <div class="info-row">
+
+            <span class="info-label">
+                Name
+            </span>
+
+            <span class="info-value">
+                {{ request.tab_user.get_full_name|default:"Not provided" }}
+            </span>
+
+        </div>
+
+
+        <div class="info-row">
+
+            <span class="info-label">
+                Email
+            </span>
+
+            <span class="info-value">
+                {{ request.tab_user.email|default:"Not provided" }}
+            </span>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+{% endblock %}

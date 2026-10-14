@@ -1,0 +1,322 @@
+{% extends "accounts/base_farmer.html" %}
+
+{% block title %}
+Sales | FarmBridge
+{% endblock %}
+
+{% block nav_sales %}
+active
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .sales-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .welcome-section {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 30px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    }
+
+    .welcome-section h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+    }
+
+    .welcome-section p {
+        margin: 0;
+        opacity: 0.92;
+    }
+
+    .summary-card {
+        background-color: white;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+        border: 1px solid #eeeeee;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .summary-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background-color: #2e7d32;
+    }
+
+    .summary-card h3 {
+        margin: 5px 0 10px;
+        color: #555;
+        font-size: 16px;
+    }
+
+    .sales-amount {
+        font-size: 32px;
+        font-weight: bold;
+        color: #2e7d32;
+    }
+
+    .table-card {
+        background-color: white;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        border: 1px solid #eeeeee;
+        overflow-x: auto;
+    }
+
+    .table-title {
+        margin: 0 0 18px;
+        color: #1b5e20;
+        font-size: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+    }
+
+    th {
+        background-color: #2e7d32;
+        color: white;
+        padding: 14px;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    td {
+        padding: 14px;
+        text-align: center;
+        border-bottom: 1px solid #eeeeee;
+        color: #444;
+        font-size: 14px;
+    }
+
+    tr:hover {
+        background-color: #f3f7f1;
+    }
+
+    .order-id {
+        font-weight: bold;
+        color: #1b5e20;
+    }
+
+    .product-name {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .sale-total {
+        font-weight: bold;
+        color: #2e7d32;
+    }
+
+    .status {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    .delivered {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .empty {
+        background-color: white;
+        padding: 45px;
+        border-radius: 14px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        text-align: center;
+        border: 1px solid #eeeeee;
+    }
+
+    .empty-icon {
+        font-size: 42px;
+        margin-bottom: 10px;
+    }
+
+    .empty h3 {
+        color: #2e7d32;
+        margin-bottom: 8px;
+    }
+
+    .empty p {
+        color: #666;
+        margin: 0;
+    }
+
+    @media (max-width: 700px) {
+
+        .welcome-section {
+            padding: 22px;
+        }
+
+        .welcome-section h1 {
+            font-size: 23px;
+        }
+
+        .summary-card {
+            padding: 22px;
+        }
+
+        .sales-amount {
+            font-size: 28px;
+        }
+
+        .table-card {
+            padding: 18px;
+        }
+
+        .empty {
+            padding: 35px 20px;
+        }
+
+    }
+
+</style>
+
+
+<div class="sales-container">
+
+
+    <div class="welcome-section">
+
+        <h1>
+            Sales & Earnings 💰
+        </h1>
+
+        <p>
+            View your completed sales and earnings from FarmBridge.
+        </p>
+
+    </div>
+
+
+    <div class="summary-card">
+
+        <h3>
+            Total Sales
+        </h3>
+
+        <div class="sales-amount">
+            ₹{{ total_sales|floatformat:2 }}
+        </div>
+
+    </div>
+
+
+    {% if sales %}
+
+    <div class="table-card">
+
+        <h3 class="table-title">
+            Completed Sales 📊
+        </h3>
+
+        <table>
+
+            <tr>
+
+                <th>Order ID</th>
+
+                <th>Customer</th>
+
+                <th>Product</th>
+
+                <th>Quantity</th>
+
+                <th>Price</th>
+
+                <th>Total</th>
+
+                <th>Status</th>
+
+            </tr>
+
+
+            {% for sale in sales %}
+
+            <tr>
+
+                <td class="order-id">
+                    #{{ sale.order.id }}
+                </td>
+
+                <td>
+                    {{ sale.order.customer.username }}
+                </td>
+
+                <td class="product-name">
+                    {{ sale.product.name }}
+                </td>
+
+                <td>
+                    {{ sale.quantity }}
+                </td>
+
+                <td>
+                    ₹{{ sale.price|floatformat:2 }}
+                </td>
+
+                <td class="sale-total">
+                    ₹{{ sale.sale_total|floatformat:2 }}
+                </td>
+
+                <td>
+
+                    <span class="status delivered">
+                        ✓ Delivered
+                    </span>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+
+    {% else %}
+
+    <div class="empty">
+
+        <div class="empty-icon">
+            💰
+        </div>
+
+        <h3>
+            No Sales Found
+        </h3>
+
+        <p>
+            You do not have any completed sales yet.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+
+</div>
+
+{% endblock %}
